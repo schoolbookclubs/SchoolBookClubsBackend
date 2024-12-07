@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
-
+import dotenv from 'dotenv';
+dotenv.config();
 const parentSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -34,7 +35,7 @@ const parentSchema = new mongoose.Schema({
 // Hash password before saving
 parentSchema.pre('save', async function(next) {
     if (this.isModified('password')) {
-        this.password = await bcrypt.hash(this.password, 8);
+        this.password = await bcrypt.hash(this.password, process.env.saltround);
     }
     next();
 });

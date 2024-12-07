@@ -3,6 +3,8 @@ import ParentToken from '../../models/parentToken.model.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import StudentModel from '../../models/student.model.js';
+import dotenv from 'dotenv';
+dotenv.config();
 
 class ParentController {
     // Signup new parent
