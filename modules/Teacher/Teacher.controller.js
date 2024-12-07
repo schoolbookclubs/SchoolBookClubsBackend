@@ -37,6 +37,12 @@ const loginSchema = Joi.object({
     password: Joi.string().required()
 });
 
+const forgetPasswordSchema = Joi.object({
+    email: Joi.string().email().required(),
+    newPassword: Joi.string().min(6).required(),
+    confirmPassword: Joi.string().valid(Joi.ref('newPassword')).required()
+});
+
 export const signupTeacher = async (req, res) => {
     try {
         // Validate request body
@@ -303,6 +309,40 @@ export const loginTeacher = async (req, res) => {
             token: tokenDoc.token
         });
 
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+export const forgetPasswordTeacher = async (req, res) => {
+    try {
+        // Validate request body
+        const { error } = forgetPasswordSchema.validate(req.body);
+        if (error) return res.status(400).json({ message: error.details[0].message });
+
+        const { email, newPassword, confirmPassword } = req.body;
+
+        // Check if passwords match
+        if (newPassword !== confirmPassword) {
+            return res.status(400).json({ message: 'كلمة المرور الجديدة وتأكيد كلمة المرور غير متطابقين' });
+        }
+
+        // Find teacher by email
+        const teacher = await Teachermodel.findOne({ email });
+        if (!teacher) {
+            return res.status(404).json({ message: 'البريد الالكتروني غير مسجل' });
+        }
+
+        // Hash new password
+        const hashedPassword = await bcrypt.hash(newPassword, parseInt(process.env.saltround));
+        
+        // Update password
+        teacher.password = hashedPassword;
+        await teacher.save();
+
+      
+
+        res.json({ message: 'تم تغيير كلمة المرور بنجاح' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

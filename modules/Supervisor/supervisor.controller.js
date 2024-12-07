@@ -37,6 +37,12 @@ const loginSchema = Joi.object({
     password: Joi.string().required()
 });
 
+const forgetPasswordSchema = Joi.object({
+    email: Joi.string().email().required(),
+    newPassword: Joi.string().min(6).required(),
+    confirmPassword: Joi.string().valid(Joi.ref('newPassword')).required()
+});
+
 export const signupSupervisor = async (req, res) => {
     try {
         // Validate request body
@@ -297,6 +303,40 @@ export const loginSupervisor = async (req, res) => {
             token: tokenDoc.token
         });
 
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+export const forgetPasswordSupervisor = async (req, res) => {
+    try {
+        // Validate request body
+        const { error } = forgetPasswordSchema.validate(req.body);
+        if (error) return res.status(400).json({ message: error.details[0].message });
+
+        const { email, newPassword, confirmPassword } = req.body;
+
+        // Check if passwords match
+        if (newPassword !== confirmPassword) {
+            return res.status(400).json({ message: 'كلمة المرور الجديدة وتأكيد كلمة المرور غير متطابقين' });
+        }
+
+        // Find supervisor by email
+        const supervisor = await Supervisormodel.findOne({ email });
+        if (!supervisor) {
+            return res.status(404).json({ message: 'البريد الالكتروني غير مسجل' });
+        }
+
+        // Hash new password
+        const hashedPassword = await bcrypt.hash(newPassword, parseInt(process.env.saltround));
+        
+        // Update password
+        supervisor.password = hashedPassword;
+        await supervisor.save();
+
+       
+
+        res.json({ message: 'تم تغيير كلمة المرور بنجاح' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

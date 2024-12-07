@@ -6,7 +6,8 @@ import {
     updateSupervisor,
     deleteSupervisor,
     getAllSupervisors,
-    getSupervisor
+    getSupervisor,
+    forgetPasswordSupervisor
 } from './supervisor.controller.js';
 
 const router = express.Router();
@@ -15,6 +16,7 @@ const router = express.Router();
 router.post('/signupSupervisor', signupSupervisor);
 router.post('/complete-profile-supervisor', completeProfileSupervisor);
 router.post('/loginSupervisor', loginSupervisor);
+router.post('/forget-password', forgetPasswordSupervisor);
 
 // CRUD routes
 router.put('/:id', updateSupervisor);

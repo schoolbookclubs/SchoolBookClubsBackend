@@ -1,10 +1,10 @@
-import StudentModel from '../../models/Student.model.js';
 import StudentTokenModel from '../../models/StudentToken.model.js';
 import SchoolModel from '../../models/School.model.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
+import StudentModel from '../../models/student.model.js';
 dotenv.config();
 
 // Create transporter for sending emails
