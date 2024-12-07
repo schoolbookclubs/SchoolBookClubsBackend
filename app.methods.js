@@ -4,6 +4,8 @@ import cors from "cors";
 import SchoolRouter from "./modules/school/school.router.js";
 import TeacherRouter from "./modules/Teacher/Teacher.router.js";
 import SupervisorRouter from "./modules/Supervisor/supervisor.router.js";
+import studentRouter from "./modules/student/student.router.js";
+
 dotenv.config();
 
 export const appMethods = (app, express) => {
@@ -13,6 +15,7 @@ export const appMethods = (app, express) => {
     app.use("/api/school",SchoolRouter)
     app.use("/api/Teacher",TeacherRouter)
     app.use("/api/Supervisor",SupervisorRouter)
+    app.use("/api/student",studentRouter)
     app.get("/", (req, res, next) => {
         const temp = `
         <!DOCTYPE html>
