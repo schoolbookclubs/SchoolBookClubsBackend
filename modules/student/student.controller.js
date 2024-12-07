@@ -46,14 +46,12 @@ export const signup = async (req, res) => {
             if (!existing) isUnique = true;
         }
 
-        // Hash password
-        const hashedPassword = await bcrypt.hash(password, parseInt(process.env.saltround));
 
         // Create new student
         const student = new StudentModel({
             name,
             email,
-            password: hashedPassword,
+            password,
             schoolCode,
             studentCode,
             role,
