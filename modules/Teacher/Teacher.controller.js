@@ -290,6 +290,11 @@ export const loginTeacher = async (req, res) => {
             return res.status(404).json({ message: 'بريد الكتروني غير صالح' });
         }
 
+        // Check if password exists
+        if (!teacher.password) {
+            return res.status(400).json({ message: 'يرجى استكمال بيانات حسابك اولاً' });
+        }
+
         // Check password
         const isValidPassword = await bcrypt.compare(password, teacher.password);
         if (!isValidPassword) {
@@ -297,9 +302,25 @@ export const loginTeacher = async (req, res) => {
         }
 
         // Get token from database
-        const tokenDoc = await TeacherTokenModel.findOne({ TeacherId: teacher._id });
+        const tokenDoc = await TeacherTokenModel.findOne({ teacherId: teacher._id });
         if (!tokenDoc) {
-            return res.status(404).json({ message: 'رمز التحقق غير صالح' });
+            // Generate new token if not found
+            const token = jwt.sign(
+                { id: teacher._id, email: teacher.email, schoolCode: teacher.schoolCode, role: teacher.role },
+                process.env.JWT_SECRET
+            );
+
+            // Save new token
+            await new TeacherTokenModel({
+                teacherId: teacher._id,
+                token
+            }).save();
+
+            return res.json({
+                status: 200,
+                message: 'تم تسجيل الدخول بنجاح',
+                token
+            });
         }
 
         res.json({
@@ -368,18 +389,22 @@ export const deleteTeacher = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const teacher = await Teachermodel.findByIdAndDelete(id);
+        // Check if teacher exists
+        const teacher = await Teachermodel.findById(id);
         if (!teacher) {
-            return res.status(404).json({status: 404,success: false, message: 'المعلم غير موجود' });
+            return res.status(404).json({ message: 'هذا المعلم غير موجود' });
         }
 
-        // Delete associated token
-        await TeacherTokenModel.deleteOne({ TeacherId: id });
+        // Delete teacher
+        await Teachermodel.findByIdAndDelete(id);
 
-        res.json({status: 200,success: true, message: 'تم حذف المعلم بنجاح' });
+        // Delete associated token
+        await TeacherTokenModel.deleteOne({ teacherId: id });
+
+        res.json({status: 200, success: true, message: 'تم حذف المعلم بنجاح' });
 
     } catch (error) {
-        res.status(500).json({status: 500,success: false, message: error.message });
+        res.status(500).json({ message: error.message });
     }
 };
 
