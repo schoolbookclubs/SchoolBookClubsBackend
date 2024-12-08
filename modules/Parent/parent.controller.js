@@ -47,14 +47,11 @@ export const signup = async (req, res) => {
             return res.status(400).json({ message: 'البريد الالكتروني مسجل بالفعل' });
         }
 
-        // Hash password
-        const hashedPassword = await bcrypt.hash(password, parseInt(process.env.saltround));
-
-        // Create new parent
+        // Create new parent - password will be hashed by the pre-save hook
         const parent = new Parentmodel({
             name,
             email,
-            password: hashedPassword,
+            password,
             studentcodeinparent,
             role
         });
@@ -133,11 +130,8 @@ export const forgetPassword = async (req, res) => {
             return res.status(404).json({ message: 'البريد الالكتروني غير مسجل' });
         }
 
-        // Hash new password
-        const hashedPassword = await bcrypt.hash(newPassword, parseInt(process.env.saltround));
-        
-        // Update password
-        parent.password = hashedPassword;
+        // Update password - will be hashed by pre-save hook
+        parent.password = newPassword;
         await parent.save();
 
         res.json({ message: 'تم تغيير كلمة المرور بنجاح' });

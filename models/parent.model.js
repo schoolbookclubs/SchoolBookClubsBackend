@@ -34,7 +34,7 @@ const parentSchema = new mongoose.Schema({
 // Hash password before saving
 parentSchema.pre('save', async function(next) {
     if (this.isModified('password')) {
-        this.password = await bcrypt.hash(this.password, process.env.saltround);
+        this.password = await bcrypt.hash(this.password, parseInt(process.env.saltround));
     }
     next();
 });
