@@ -16,7 +16,7 @@ const TeacherSchema = new mongoose.Schema({
 // Encrypt the password before saving
 TeacherSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
-  this.password = await bcrypt.hash(this.password, process.env.saltround);
+  this.password = await bcrypt.hash(this.password, parseInt(process.env.saltround));
   next();
 });
 
