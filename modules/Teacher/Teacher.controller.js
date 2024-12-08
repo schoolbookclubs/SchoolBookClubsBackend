@@ -96,7 +96,7 @@ export const signupTeacher = async (req, res) => {
         }
 
         // Create complete profile link
-        const completeProfileLink = `${process.env.FRONTEND_URL}/complete-profile?token=${token}`;
+        const completeProfileLink = `${process.env.FRONTEND_URL}/complete-profile-teacher?token=${token}`;
 
         // Send email
         const mailOptions = {
