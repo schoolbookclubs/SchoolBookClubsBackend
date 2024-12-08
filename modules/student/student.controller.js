@@ -276,11 +276,8 @@ export const forgetPassword = async (req, res) => {
             return res.status(404).json({ message: 'البريد الالكتروني غير موجود' });
         }
 
-        // Hash new password
-        const hashedPassword = await bcrypt.hash(newPassword, parseInt(process.env.saltround));
-
-        // Update password
-        student.password = hashedPassword;
+        // Update password - no need to hash here as it's handled by the pre-save hook
+        student.password = newPassword;
         await student.save();
 
         // Delete existing tokens
@@ -297,7 +294,7 @@ export const forgetPassword = async (req, res) => {
 
         res.json({ 
             success: true, 
-            message: 'تم تغيير كلمة المرور بنجاح', 
+            message: 'تم تغيير كلمة مرور الطالب بنجاح', 
             token 
         });
 
@@ -351,4 +348,3 @@ export const deleteStudent = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
-
