@@ -1,5 +1,13 @@
 import express from 'express';
-import { signupTeacher, completeProfileTeacher, loginTeacher, updateTeacher, deleteTeacher, getAllTeachers, getTeacher, forgetPasswordTeacher } from './Teacher.controller.js';
+import { 
+    signupTeacher, 
+    completeProfileTeacher, 
+    loginTeacher, 
+    updateTeacher, 
+    deleteTeacher, 
+    getAllTeachers, 
+    getTeacher, 
+    forgetPasswordTeacher} from './Teacher.controller.js';
 
 const router = express.Router();
 
@@ -15,4 +23,10 @@ router.delete('/:id', deleteTeacher);
 router.get('/', getAllTeachers);
 router.get('/:id', getTeacher);
 
+// Get students by school code
+
 export default router;
+
+
+
+

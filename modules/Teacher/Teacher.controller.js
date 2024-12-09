@@ -432,3 +432,4 @@ export const getTeacher = async (req, res) => {
         res.status(500).json({status: 500,success: false, message: error.message });
     }
 };
+

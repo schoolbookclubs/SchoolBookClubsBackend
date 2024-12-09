@@ -8,5 +8,7 @@ router.post('/login', studentController.login);
 router.post('/forget-password', studentController.forgetPassword);
 router.put('/:id', studentController.updateStudent);
 router.delete('/:id', studentController.deleteStudent);
+router.post('/AllStudentsBySchoolCode', studentController.getStudentsBySchoolCode);
+
 
 export default router;

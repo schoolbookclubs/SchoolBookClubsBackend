@@ -6,6 +6,8 @@ import TeacherRouter from "./modules/Teacher/Teacher.router.js";
 import SupervisorRouter from "./modules/Supervisor/supervisor.router.js";
 import studentRouter from "./modules/student/student.router.js";
 import parentRouter from "./modules/Parent/parent.routes.js";
+import bookRouter from "./modules/Book/book.router.js";
+import RateTeacher from "./modules/RateTeacherForStudent/RateTeacherForStudent.router.js";
 
 dotenv.config();
 
@@ -18,6 +20,8 @@ export const appMethods = (app, express) => {
     app.use("/api/Supervisor",SupervisorRouter)
     app.use("/api/student",studentRouter)
     app.use("/api/parent",parentRouter)
+    app.use("/api/Book",bookRouter)
+    app.use("/api/RateTeacher",RateTeacher)
     app.get("/", (req, res, next) => {
         const temp = `
         <!DOCTYPE html>

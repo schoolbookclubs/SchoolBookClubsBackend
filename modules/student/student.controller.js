@@ -61,7 +61,7 @@ export const signup = async (req, res) => {
 
         // Generate token
         const token = jwt.sign(
-            { id: student._id, email: student.email, studentCode: student.studentCode },
+            { id: student._id, email: student.email, studentCode: student.studentCode,role:student.role },
             process.env.JWT_SECRET
         );
 
@@ -346,5 +346,43 @@ export const deleteStudent = async (req, res) => {
 
     } catch (error) {
         res.status(500).json({ message: error.message });
+    }
+};
+
+export const getStudentsBySchoolCode = async (req, res) => {
+    try {
+        // Validate school code is provided in the request body
+        const { schoolCode } = req.body;
+            console.log(schoolCode);
+        if (!schoolCode) {
+            return res.status(400).json({
+                status: 'خطأ',
+                message: 'يجب تقديم الكود المدرسي'
+            });
+        }
+
+        // Find students with the specified school code
+        const students = await StudentModel.find({ 
+            schoolCode: schoolCode 
+        }).select('-password'); // Exclude password field
+
+        // Check if any students found
+        if (students.length === 0) {
+            return res.status(404).json({
+                status: 'خطأ',
+                message: 'لم يتم العثور على طلاب للكود المدرسي المقدم'
+            });
+        }
+
+        res.status(200).json({
+            status: 'نجاح',
+            results: students.length,
+            data: students
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: 'خطأ',
+            message: 'حدث خطأ أثناء استرداد الطلاب: ' + error.message
+        });
     }
 };
