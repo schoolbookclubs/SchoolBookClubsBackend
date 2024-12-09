@@ -86,7 +86,7 @@ export const signupSupervisor = async (req, res) => {
         await supervisorToken.save();
 
         // Create complete profile link
-        const completeProfileLink = `${process.env.FRONTEND_URL}/complete-profile-supervisor?token=${token}`;
+        const completeProfileLink = `${process.env.FRONTEND_URL}/CompleteProfileSupervisor?token=${token}`;
 
         // Send email
         const mailOptions = {
