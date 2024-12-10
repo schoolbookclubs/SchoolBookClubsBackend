@@ -201,5 +201,44 @@ export const deleteBook = async (req, res) => {
     }
 };
 
+// Get Books by School Code
+export const getBooksBySchoolCode = async (req, res) => {
+    try {
+        const { schoolCode } = req.body;
+
+        // Validate school code
+        if (!schoolCode) {
+            return res.status(400).json({ 
+                message: 'School code is required' 
+            });
+        }
+
+        // Find all books with the matching school code
+        const books = await Bookmodel.find({ schoolCode })
+            .populate('teacher', 'name') // Optional: populate teacher details
+            .sort({ createdAt: -1 }); // Sort by most recent first
+
+        // If no books found, return appropriate message
+        if (books.length === 0) {
+            return res.status(404).json({ 
+                message: `No books found for school code: ${schoolCode}` 
+            });
+        }
+
+        // Return the books
+        res.status(200).json({
+            message: `Books retrieved successfully for school code: ${schoolCode}`,
+            count: books.length,
+            books: books
+        });
+    } catch (error) {
+        // Handle any errors
+        res.status(500).json({ 
+            message: 'Error retrieving books', 
+            error: error.message 
+        });
+    }
+};
+
 // Middleware for file upload
 export const uploadBookImage = upload.single('bookImage');

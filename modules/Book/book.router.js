@@ -1,26 +1,35 @@
 import express from 'express';
-import * as bookController from './book.controller.js';
+import { 
+    createBook, 
+    getAllBooks, 
+    updateBook, 
+    deleteBook,
+    uploadBookImage,
+    getBooksBySchoolCode 
+} from './book.controller.js';
 import { protect } from './book.middleware.js';
 
 const router = express.Router();
 
-router.use(protect); // Ensure only authenticated teachers can access
-
 router
     .route('/')
+    .get(protect, getAllBooks)
     .post(
-        bookController.uploadBookImage, 
-        bookController.createBook
-    )
-    .get(bookController.getAllBooks);
+        protect,
+        uploadBookImage,
+        createBook
+    );
 
 router
     .route('/:id')
-    .get(bookController.getBook)
-    .patch(
-        bookController.uploadBookImage, 
-        bookController.updateBook
+    .put(
+        protect,
+        uploadBookImage,
+        updateBook
     )
-    .delete(bookController.deleteBook);
+    .delete(protect, deleteBook);
+
+// Route to get books by school code without middleware
+router.post('/getBooksBySchoolCode', getBooksBySchoolCode);
 
 export default router;
