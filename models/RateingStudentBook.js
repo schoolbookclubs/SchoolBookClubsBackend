@@ -40,6 +40,14 @@ const RateingStudentBookSchema = new mongoose.Schema({
     enum : ['نعم', 'لا'],
     trim: true
   },
+  readingStartDate: {
+    type: Date,
+    required: true
+  },
+  readingEndDate: {
+    type: Date,
+    required: true
+  },
   authorStyle: {
     type: String,
     trim: true

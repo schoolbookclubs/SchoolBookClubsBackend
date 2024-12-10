@@ -21,8 +21,17 @@ class RateingStudentBookController {
         memorableQuotes: req.body.memorableQuotes,
         potentialAdditions: req.body.potentialAdditions,
         personalImpact: req.body.personalImpact,
-        bookRating: req.body.bookRating
+        bookRating: req.body.bookRating,
+        readingStartDate: req.body.readingStartDate,
+        readingEndDate: req.body.readingEndDate
       };
+
+      // Validate reading dates
+      if (new Date(ratingData.readingStartDate) > new Date(ratingData.readingEndDate)) {
+        return res.status(400).json({
+          message: 'Reading start date must be before or equal to reading end date'
+        });
+      }
 
       const newRating = new RateingStudentBook(ratingData);
       const savedRating = await newRating.save();
