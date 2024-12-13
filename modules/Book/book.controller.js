@@ -40,7 +40,7 @@ export const createBook = async (req, res) => {
             author, 
             illustrator, 
             numberOfPages, 
-            bookLink,
+            Discussiondate,
             schoolCode
         } = req.body;
         
@@ -62,7 +62,7 @@ export const createBook = async (req, res) => {
             illustrator,
             bookImage: bookImageUrl,
             numberOfPages,
-            bookLink,
+            Discussiondate,
             schoolCode,
             teacher: req.user._id 
         });
@@ -132,7 +132,7 @@ export const updateBook = async (req, res) => {
             author, 
             illustrator, 
             numberOfPages, 
-            bookLink 
+            Discussiondate 
         } = req.body;
         
         const updateData = { 
@@ -140,7 +140,7 @@ export const updateBook = async (req, res) => {
             author, 
             illustrator,
             numberOfPages,
-            bookLink 
+            Discussiondate 
         };
 
         // If a new image is uploaded

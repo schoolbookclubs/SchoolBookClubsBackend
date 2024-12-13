@@ -19,6 +19,11 @@ const parentSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    phone :{
+        type: String,
+        trim: true,
+        required: true
+    },
     role :{
         type: String,
         default: 'ولي أمر'

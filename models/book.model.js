@@ -24,11 +24,10 @@ const bookSchema = new mongoose.Schema({
         required: [true, 'عدد الصفحات مطلوب'],
         min: [1, 'يجب أن يكون عدد الصفحات أكبر من صفر']
     },
-    bookLink: {
-        type: String,
-        required: [true, 'رابط قراءة الكتاب مطلوب'],
- 
-    },
+    Discussiondate: {
+        type: Date,
+        required: true
+      },
     schoolCode: { type: String, required: true },
     teacher: {
         type: mongoose.Schema.Types.ObjectId,

@@ -6,6 +6,11 @@ const StudentSelfAssessmentSchema = new mongoose.Schema({
     ref: 'Student',
     required: true
   },
+  bookId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Book',
+    required: true
+  },
   enjoyedReading: {
     type: Number,
     min: 1,

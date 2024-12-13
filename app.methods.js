@@ -11,6 +11,7 @@ import RateTeacher from "./modules/RateTeacherForStudent/RateTeacherForStudent.r
 import RateingStudentBookRouter from "./modules/RatingStudentBooks/routes/RateingStudentBookRoutes.js";
 import StudentSelfAssessmentRouter from "./modules/StudentSelfAssessment/routes/StudentSelfAssessmentRoutes.js";
 import ParentAssessmentRouter from "./modules/ParentAssessment/routes/ParentAssessmentRoutes.js";
+import ReadingClubEvaluationRouter from "./modules/ReadingClubEvaluation/ReadingClubEvaluation.router.js";
 
 dotenv.config();
 
@@ -28,6 +29,7 @@ export const appMethods = (app, express) => {
     app.use("/api/RateingStudentBook",RateingStudentBookRouter)
     app.use("/api/StudentSelfAssessment",StudentSelfAssessmentRouter)
     app.use("/api/ParentAssessment",ParentAssessmentRouter)
+    app.use("/api/ReadingClubEvaluation",ReadingClubEvaluationRouter)
     app.get("/", (req, res, next) => {
         const temp = `
         <!DOCTYPE html>

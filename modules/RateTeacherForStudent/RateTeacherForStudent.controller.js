@@ -3,12 +3,13 @@ import RateTeacherForStudent from '../../models/RateTeacherForStudent.model.js';
 export const createRating = async (req, res) => {
     try {
         const { teacherId, studentId } = req.params;
-        const ratingData = req.body;
+        const { bookId, ...ratingData } = req.body;
 
         // Create new rating
         const newRating = new RateTeacherForStudent({
             teacher: teacherId,
             student: studentId,
+            book: bookId,
             ...ratingData
         });
 

@@ -11,6 +11,16 @@ const RateTeacherForStudentSchema = new mongoose.Schema({
         ref: 'Student',
         required: true
     },
+    book :{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Book',
+        required: true
+    },
+    audience :{
+        type: String,
+        enum : ['نعم', 'لا'],
+        required: true
+    },
     readingSkills: {
         completeReading: {
             type: Number,

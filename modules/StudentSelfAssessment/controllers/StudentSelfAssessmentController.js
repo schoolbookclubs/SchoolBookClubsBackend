@@ -6,6 +6,7 @@ class StudentSelfAssessmentController {
     try {
       const assessmentData = {
         studentId: req.body.studentId,
+        bookId: req.body.bookId,
         enjoyedReading: req.body.enjoyedReading,
         readUsefulBooks: req.body.readUsefulBooks,
         madeNewFriends: req.body.madeNewFriends,

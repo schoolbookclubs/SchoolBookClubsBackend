@@ -61,7 +61,7 @@ export const signup = async (req, res) => {
 
         // Generate token
         const token = jwt.sign(
-            { id: student._id, email: student.email, studentCode: student.studentCode,schoolCode:student.schoolCode,role:student.role },
+            { id: student._id, email: student.email, studentCode: student.studentCode,schoolCode:student.schoolCode,role:student.role,name:student.name },
             process.env.JWT_SECRET
         );
 
