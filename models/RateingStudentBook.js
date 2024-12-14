@@ -11,30 +11,6 @@ const RateingStudentBookSchema = new mongoose.Schema({
     ref: 'Book',
     required: true
   },
-  mainCharacters: {
-    type: String,
-    trim: true
-  },
-  characterTraits: {
-    type: String,
-    trim: true
-  },
-  keySummary: {
-    type: String,
-    trim: true
-  },
-  favoriteQuotes: {
-    type: String,
-    trim: true
-  },
-  hypotheticalChanges: {
-    type: String,
-    trim: true
-  },
-  overallOpinion: {
-    type: String,
-    trim: true
-  },
   recommendBook: {
     type: String,
     enum : ['نعم', 'لا'],

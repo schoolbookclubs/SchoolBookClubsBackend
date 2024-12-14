@@ -10,6 +10,7 @@ const studentSchema = new mongoose.Schema({
   schoolCode: { type: String, required: true },
   studentCode: { type: String, required: true, unique: true },
   role: { type: String, default: 'طالب' },
+  grade: { type: String, required: true },
   schoolId: { type: mongoose.Schema.Types.ObjectId, ref: 'School' }
 }, {
   timestamps: true

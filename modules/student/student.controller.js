@@ -23,7 +23,7 @@ const generateStudentCode = () => {
 
 export const signup = async (req, res) => {
     try {
-        const { name, email, password, schoolCode, role } = req.body;
+        const { name, email, password, schoolCode, role, grade } = req.body;
 
         // Check if school exists
         const school = await SchoolModel.findOne({ code: schoolCode });
@@ -55,13 +55,14 @@ export const signup = async (req, res) => {
             schoolCode,
             studentCode,
             role,
+            grade,
             schoolId: school._id
         });
         await student.save();
 
         // Generate token
         const token = jwt.sign(
-            { id: student._id, email: student.email, studentCode: student.studentCode,schoolCode:student.schoolCode,role:student.role,name:student.name },
+            { id: student._id, email: student.email, studentCode: student.studentCode,schoolCode:student.schoolCode,role:student.role,name:student.name,grade:student.grade },
             process.env.JWT_SECRET
         );
 

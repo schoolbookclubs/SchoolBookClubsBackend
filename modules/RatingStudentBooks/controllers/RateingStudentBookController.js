@@ -7,12 +7,6 @@ class RateingStudentBookController {
       const ratingData = {
         studentId: req.body.studentId,
         bookId: req.body.bookId,
-        mainCharacters: req.body.mainCharacters,
-        characterTraits: req.body.characterTraits,
-        keySummary: req.body.keySummary,
-        favoriteQuotes: req.body.favoriteQuotes,
-        hypotheticalChanges: req.body.hypotheticalChanges,
-        overallOpinion: req.body.overallOpinion,
         recommendBook: req.body.recommendBook,
         authorStyle: req.body.authorStyle,
         keyIdeas: req.body.keyIdeas,
