@@ -11,6 +11,10 @@ const StudentSelfAssessmentSchema = new mongoose.Schema({
     ref: 'Book',
     required: true
   },
+  schoolCode: {
+    type: String,
+    required: true
+  },
   enjoyedReading: {
     type: Number,
     min: 1,
@@ -64,5 +68,21 @@ const StudentSelfAssessmentSchema = new mongoose.Schema({
     default: Date.now
   }
 });
+
+StudentSelfAssessmentSchema.methods.calculateAverageRating = function() {
+  const ratingKeys = [
+    'enjoyedReading',
+    'readUsefulBooks',
+    'madeNewFriends',
+    'conversationsImprovedUnderstanding',
+    'expressedOpinionFreely',
+    'increasedSelfConfidence',
+    'wouldEncourageClassmates',
+    'willJoinNextYear'
+  ];
+
+  const total = ratingKeys.reduce((sum, key) => sum + (this[key] || 0), 0);
+  return total / ratingKeys.length;
+};
 
 export default mongoose.model('StudentSelfAssessment', StudentSelfAssessmentSchema);

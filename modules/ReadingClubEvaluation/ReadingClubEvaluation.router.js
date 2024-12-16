@@ -5,7 +5,8 @@ import {
   getReadingClubEvaluationById,
   getStudentReadingClubEvaluations,
   updateReadingClubEvaluation,
-  deleteReadingClubEvaluation
+  deleteReadingClubEvaluation,
+  getEvaluationsBySchoolCode
 } from './ReadingClubEvaluation.controller.js';
 
 const router = express.Router();
@@ -22,5 +23,8 @@ router.route('/:id')
 
 router.route('/student/:studentId')
   .get(getStudentReadingClubEvaluations);
+
+router.route('/oneschool/:schoolCode/ReadingClubEvaluations')
+  .get(getEvaluationsBySchoolCode);
 
 export default router;

@@ -6,6 +6,10 @@ const ReadingClubEvaluationSchema = new mongoose.Schema({
     ref: 'Student',
     required: true
   },
+  schoolCode: {
+    type: String,
+    required: true
+  },
   readingPerspectiveChange: {
     type: String,
     trim: true,

@@ -6,6 +6,10 @@ const ParentAssessmentSchema = new mongoose.Schema({
     ref: 'Parent',
     required: true
   },
+  schoolCode :{
+    type: String,
+    required: true
+  },
   generalBehavior: {
     type: Number,
     min: 1,
@@ -53,5 +57,20 @@ const ParentAssessmentSchema = new mongoose.Schema({
     default: Date.now
   }
 });
+
+ParentAssessmentSchema.methods.calculateAverageRating = function() {
+  const ratingKeys = [
+    'generalBehavior',
+    'readingEnthusiasm',
+    'readingInterests',
+    'communicationSkills',
+    'socialSkills',
+    'academicPerformance',
+    'criticalThinking'
+  ];
+
+  const total = ratingKeys.reduce((sum, key) => sum + (this[key] || 0), 0);
+  return total / ratingKeys.length;
+};
 
 export default mongoose.model('ParentAssessment', ParentAssessmentSchema);

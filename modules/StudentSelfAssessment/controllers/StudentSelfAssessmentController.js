@@ -7,6 +7,7 @@ class StudentSelfAssessmentController {
       const assessmentData = {
         studentId: req.body.studentId,
         bookId: req.body.bookId,
+        schoolCode: req.body.schoolCode,
         enjoyedReading: req.body.enjoyedReading,
         readUsefulBooks: req.body.readUsefulBooks,
         madeNewFriends: req.body.madeNewFriends,
@@ -75,6 +76,42 @@ class StudentSelfAssessmentController {
     } catch (error) {
       res.status(400).json({
         message: 'Error retrieving self-assessments',
+        error: error.message
+      });
+    }
+  }
+
+  // Get self-assessments by school code with average ratings
+  static async getAssessmentsBySchoolCode(req, res) {
+    try {
+      const { schoolCode } = req.params;
+      const assessments = await StudentSelfAssessment.find({ schoolCode })
+        .populate('studentId', 'name')
+        .populate('bookId', 'title');
+
+      const assessmentsWithAverages = assessments.map(assessment => ({
+        student: assessment.studentId,
+        book: assessment.bookId,
+        ratings: {
+          enjoyedReading: assessment.enjoyedReading,
+          readUsefulBooks: assessment.readUsefulBooks,
+          madeNewFriends: assessment.madeNewFriends,
+          conversationsImprovedUnderstanding: assessment.conversationsImprovedUnderstanding,
+          expressedOpinionFreely: assessment.expressedOpinionFreely,
+          increasedSelfConfidence: assessment.increasedSelfConfidence,
+          wouldEncourageClassmates: assessment.wouldEncourageClassmates,
+          willJoinNextYear: assessment.willJoinNextYear
+        },
+        averageRating: assessment.calculateAverageRating()
+      }));
+
+      res.status(200).json({
+        message: 'Assessments retrieved successfully',
+        assessments: assessmentsWithAverages
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: 'Error retrieving assessments',
         error: error.message
       });
     }

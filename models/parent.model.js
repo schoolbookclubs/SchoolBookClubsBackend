@@ -31,6 +31,10 @@ const parentSchema = new mongoose.Schema({
     studentcodeinparent: {
         type: String,
         required: true,
+    },
+    schoolCode: {
+        type: String,
+        required: true
     }
 }, {
     timestamps: true

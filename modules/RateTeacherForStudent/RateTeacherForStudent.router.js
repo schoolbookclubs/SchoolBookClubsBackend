@@ -2,7 +2,10 @@ import express from 'express';
 import { 
     createRating, 
     getRatingsByTeacher, 
-    getRatingsByStudent 
+    getRatingsByStudent,
+    getRatingsTeacherById,
+    getRatingsBySchoolCode,
+    getStudentAttendanceBySchool
 } from './RateTeacherForStudent.controller.js';
 import { validateTeacherAndStudent } from '../../middleware/teacherRatingMiddleware.js';
 
@@ -23,5 +26,13 @@ router.get('/teacher/:teacherId',
 router.get('/student/:studentId', 
     getRatingsByStudent
 );
+
+// Route to get ratings by school code
+router.get('/oneschool/:schoolCode/Teachersratings', 
+    getRatingsBySchoolCode
+);
+
+// Route to get student attendance by school code
+router.get('/attendance/oneschool/:schoolCode', getStudentAttendanceBySchool);
 
 export default router;

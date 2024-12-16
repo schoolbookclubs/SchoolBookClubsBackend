@@ -14,7 +14,8 @@ const signupSchema = Joi.object({
     password: Joi.string().min(6).required(),
     studentcodeinparent: Joi.string().required(),
     role: Joi.string().default('ولي أمر'),
-    phone: Joi.string().required()
+    phone: Joi.string().required(),
+    schoolCode: Joi.string().required()
 });
 
 const loginSchema = Joi.object({
@@ -34,7 +35,7 @@ export const signup = async (req, res) => {
         const { error } = signupSchema.validate(req.body);
         if (error) return res.status(400).json({ message: error.details[0].message });
 
-        const { name, email, password, studentcodeinparent, role,phone } = req.body;
+        const { name, email, password, studentcodeinparent, role,phone,schoolCode } = req.body;
 
         // Check if student exists
         const student = await StudentModel.findOne({ studentCode: studentcodeinparent });
@@ -55,7 +56,8 @@ export const signup = async (req, res) => {
             password,
             studentcodeinparent,
             role,
-            phone
+            phone,
+            schoolCode
         });
         await parent.save();
 
@@ -66,7 +68,8 @@ export const signup = async (req, res) => {
             studentCode: parent.studentcodeinparent, 
             name: parent.name, 
             role: parent.role,
-            phone: parent.phone
+            phone: parent.phone,
+            schoolCode: parent.schoolCode
         }, process.env.JWT_SECRET);
 
         // Save token

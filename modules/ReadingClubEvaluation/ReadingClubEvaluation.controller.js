@@ -5,6 +5,7 @@ export const createReadingClubEvaluation = async (req, res) => {
   try {
     const { 
       studentId,
+      schoolCode,
       readingPerspectiveChange,
       mostBeneficialAspect,
       readingSkillsImprovement,
@@ -15,6 +16,7 @@ export const createReadingClubEvaluation = async (req, res) => {
 
     const newEvaluation = await ReadingClubEvaluation.create({
       studentId,
+      schoolCode,
       readingPerspectiveChange,
       mostBeneficialAspect,
       readingSkillsImprovement,
@@ -93,6 +95,26 @@ export const getStudentReadingClubEvaluations = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+// Get Reading Club Evaluations by school code
+export const getEvaluationsBySchoolCode = async (req, res) => {
+  try {
+    const { schoolCode } = req.params;
+    const evaluations = await ReadingClubEvaluation.find({ schoolCode })
+      .populate('studentId', 'name email');
+
+    res.status(200).json({
+      success: true,
+      count: evaluations.length,
+      data: evaluations
+    });
+  } catch (error) {
+    res.status(400).json({
       success: false,
       message: error.message
     });

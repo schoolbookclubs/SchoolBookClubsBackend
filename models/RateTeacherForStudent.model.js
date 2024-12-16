@@ -21,6 +21,10 @@ const RateTeacherForStudentSchema = new mongoose.Schema({
         enum : ['نعم', 'لا'],
         required: true
     },
+    schoolCode :{
+        type: String,
+        required: true
+    },
     readingSkills: {
         completeReading: {
             type: Number,
@@ -115,10 +119,44 @@ const RateTeacherForStudentSchema = new mongoose.Schema({
             required: true
         }
     },
+    averageRating: {
+        type: Number
+    },
     createdAt: {
         type: Date,
         default: Date.now
     }
+});
+
+RateTeacherForStudentSchema.methods.calculateAverageRating = function() {
+    const ratingKeys = [
+        'readingSkills.completeReading',
+        'readingSkills.deepUnderstanding',
+        'readingSkills.personalReflection',
+        'confidence',
+        'criticalThinking.creativeIdeas',
+        'criticalThinking.connectingExperiences',
+        'criticalThinking.independentThinking',
+        'communicationSkills.clearExpression',
+        'communicationSkills.activeListening',
+        'communicationSkills.constructiveFeedback',
+        'socialSkills.activeParticipation',
+        'socialSkills.respectingDiversity',
+        'socialSkills.buildingFriendships',
+        'generalBehavior.collaboration'
+    ];
+    
+    const total = ratingKeys.reduce((sum, key) => {
+        const keys = key.split('.');
+        return sum + (this[keys[0]][keys[1]] || 0);
+    }, 0);
+    
+    return total / ratingKeys.length;
+};
+
+RateTeacherForStudentSchema.post('save', function(doc) {
+    doc.averageRating = doc.calculateAverageRating();
+    doc.save();
 });
 
 export default mongoose.model('RateTeacherForStudent', RateTeacherForStudentSchema);

@@ -11,6 +11,10 @@ const RateingStudentBookSchema = new mongoose.Schema({
     ref: 'Book',
     required: true
   },
+  schoolCode: {
+    type: String,
+    required: true
+  },
   recommendBook: {
     type: String,
     enum : ['نعم', 'لا'],

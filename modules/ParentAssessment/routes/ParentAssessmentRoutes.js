@@ -12,4 +12,7 @@ router.get('/:parentId/student/:studentId', ParentAssessmentController.getStuden
 // Route to get all assessments for a parent
 router.get('/:parentId', ParentAssessmentController.getAllParentAssessments);
 
+// Route to get parent assessments by school code
+router.get('/parentAssessmentsByschoolCode/:schoolCode/parentAssessments', ParentAssessmentController.getAssessmentsBySchoolCode);
+
 export default router;

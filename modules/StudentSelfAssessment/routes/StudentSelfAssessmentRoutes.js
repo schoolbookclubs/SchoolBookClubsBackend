@@ -11,5 +11,6 @@ router.get('/student/:studentId', StudentSelfAssessmentController.getStudentSelf
 
 // Route to get all self-assessments
 router.get('/all', StudentSelfAssessmentController.getAllSelfAssessments);
+router.get('/oneschool/:schoolCode/StudentsSelfAssessments', StudentSelfAssessmentController.getAssessmentsBySchoolCode);
 
 export default router;

@@ -6,6 +6,7 @@ class ParentAssessmentController {
     try {
       const assessmentData = {
         parentId: req.body.parentId,
+        schoolCode: req.body.schoolCode,
         generalBehavior: req.body.generalBehavior,
         readingEnthusiasm: req.body.readingEnthusiasm,
         readingInterests: req.body.readingInterests,
@@ -85,6 +86,39 @@ class ParentAssessmentController {
         status: 400,
         success: false,
         message: 'Error retrieving parent assessments',
+        error: error.message
+      });
+    }
+  }
+
+  // Get parent assessments by school code with average ratings
+  static async getAssessmentsBySchoolCode(req, res) {
+    try {
+      const { schoolCode } = req.params;
+      const assessments = await ParentAssessment.find({ schoolCode })
+        .populate('parentId');
+
+      const assessmentsWithAverages = assessments.map(assessment => ({
+        parent: assessment.parentId,
+        ratings: {
+          generalBehavior: assessment.generalBehavior,
+          readingEnthusiasm: assessment.readingEnthusiasm,
+          readingInterests: assessment.readingInterests,
+          communicationSkills: assessment.communicationSkills,
+          socialSkills: assessment.socialSkills,
+          academicPerformance: assessment.academicPerformance,
+          criticalThinking: assessment.criticalThinking
+        },
+        averageRating: assessment.calculateAverageRating()
+      }));
+
+      res.status(200).json({
+        message: 'Assessments retrieved successfully',
+        assessments: assessmentsWithAverages
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: 'Error retrieving assessments',
         error: error.message
       });
     }

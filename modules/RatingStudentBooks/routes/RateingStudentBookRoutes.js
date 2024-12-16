@@ -12,4 +12,10 @@ router.get('/book/:bookId', RateingStudentBookController.getBookRatings);
 // Route to get ratings by a specific student
 router.get('/student/:studentId', RateingStudentBookController.getStudentBookRatings);
 
+// Route to get ratings by school code
+router.get('/RateingStudentBookbyschoolcode/:schoolCode', RateingStudentBookController.getRatingsBySchoolCode);
+
+// Route to get count of unique rated books by school code
+router.get('/uniquebooksoneschool/:schoolCode', RateingStudentBookController.getUniqueRatedBooksCount);
+
 export default router;
