@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import StudentModel from '../../models/Student.model.js';
 import Parentmodel from '../../models/parent.model.js';
 import Joi from 'joi';
+import Schoolmodel from '../../models/School.model.js';
 
 dotenv.config();
 
@@ -42,7 +43,10 @@ export const signup = async (req, res) => {
         if (!student) {
             return res.status(404).json({ message: 'كود الطالب الذي ادخلته غير صالح' });
         }
-
+        const school = await Schoolmodel.findOne({ code: schoolCode });
+        if (!school) {
+            return res.status(404).json({ message: 'كود المدرسة غير صالح' });
+        }
         // Check if parent already exists
         const existingParent = await Parentmodel.findOne({ email });
         if (existingParent) {
