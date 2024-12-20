@@ -244,7 +244,7 @@ export const getRatingsTeacherByhisId = async (req, res) => {
 
         // جلب جميع التقييمات مع البيانات المطلوبة في استعلام واحد
         const ratings = await RateTeacherForStudent.aggregate([
-            { $match: { teacher: mongoose.Types.ObjectId(teacherId) } },
+            { $match: { teacher: new mongoose.Types.ObjectId(teacherId) } },
             {
                 $lookup: {
                     from: 'teachers',
