@@ -4,9 +4,20 @@ class RateingStudentBookController {
   // Create a new book rating
   static async createBookRating(req, res) {
     try {
+      const { studentId, bookId } = req.params;
+      
+      // Check if student has already rated this book
+      const existingRating = await RateingStudentBook.findOne({ studentId, bookId });
+      if (existingRating) {
+        return res.status(400).json({ 
+          success: false, 
+          message: "لقد قمت بتقييم هذا الكتاب مسبقاً" 
+        });
+      }
+
       const ratingData = {
-        studentId: req.body.studentId,
-        bookId: req.body.bookId,
+        studentId,
+        bookId,
         schoolCode: req.body.schoolCode,
         recommendBook: req.body.recommendBook,
         authorStyle: req.body.authorStyle,
@@ -21,23 +32,18 @@ class RateingStudentBookController {
         readingEndDate: req.body.readingEndDate
       };
 
-      // Validate reading dates
-      if (new Date(ratingData.readingStartDate) > new Date(ratingData.readingEndDate)) {
-        return res.status(400).json({
-          message: 'Reading start date must be before or equal to reading end date'
-        });
-      }
-
       const newRating = new RateingStudentBook(ratingData);
-      const savedRating = await newRating.save();
+      await newRating.save();
 
       res.status(201).json({
-        message: 'Book rating created successfully',
-        rating: savedRating
+        success: true,
+        message: "تم إضافة تقييم الكتاب بنجاح",
+        data: newRating
       });
     } catch (error) {
-      res.status(400).json({
-        message: 'Error creating book rating',
+      res.status(500).json({
+        success: false,
+        message: "حدث خطأ أثناء إضافة تقييم الكتاب",
         error: error.message
       });
     }
@@ -62,20 +68,29 @@ class RateingStudentBookController {
     }
   }
 
-  // Get ratings by a specific student
-  static async getStudentBookRatings(req, res) {
+  // Get student's book rating
+  static async getStudentBookRating(req, res) {
     try {
-      const studentId = req.params.studentId;
-      const ratings = await RateingStudentBook.find({ studentId })
-        .populate('bookId', 'title');
+      const { studentId, bookId } = req.params;
+      
+      const rating = await RateingStudentBook.find({ studentId, bookId });
+      
+      if (!rating || rating.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: "لم يتم العثور على تقييم لهذا الكتاب"
+        });
+      }
 
       res.status(200).json({
-        message: 'Student book ratings retrieved successfully',
-        ratings: ratings
+        success: true,
+        message: "تم جلب تقييم الكتاب بنجاح",
+        data: rating
       });
     } catch (error) {
-      res.status(400).json({
-        message: 'Error retrieving student book ratings',
+      res.status(500).json({
+        success: false,
+        message: "حدث خطأ أثناء جلب تقييم الكتاب",
         error: error.message
       });
     }
@@ -148,6 +163,64 @@ class RateingStudentBookController {
     } catch (error) {
       res.status(500).json({
         message: 'حدث خطأ في جلب عدد الكتب المقروءة',
+        error: error.message
+      });
+    }
+  }
+
+  // Get all ratings for a specific student with book and student details
+  static async getStudentRatingsWithDetails(req, res) {
+    try {
+      const { studentId } = req.params;
+      
+      const ratings = await RateingStudentBook.find({ studentId })
+        .populate('studentId', 'name') // Get student name
+        .populate('bookId', 'title'); // Get book name
+      
+      if (!ratings || ratings.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: "لم يتم العثور على تقييمات لهذا الطالب"
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        data: ratings
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: "حدث خطأ أثناء جلب تقييمات الطالب",
+        error: error.message
+      });
+    }
+  }
+
+  // Get all student ratings for a specific book with student details
+  static async getBookStudentRatingsWithDetails(req, res) {
+    try {
+      const { bookId } = req.params;
+      
+      const ratings = await RateingStudentBook.find({ bookId })
+        .populate('studentId', 'name') // Get student name
+        .populate('bookId', 'title'); // Get book title
+      
+      if (!ratings || ratings.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: "لم يتم العثور على تقييمات لهذا الكتاب"
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        data: ratings
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: "حدث خطأ أثناء جلب تقييمات الكتاب",
         error: error.message
       });
     }

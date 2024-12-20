@@ -240,5 +240,33 @@ export const getBooksBySchoolCode = async (req, res) => {
     }
 };
 
+// Get books by teacher ID
+export const getBooksByTeacherId = async (req, res) => {
+  try {
+    const { teacherId } = req.params;
+    
+    const books = await Bookmodel.find({ teacher: teacherId })
+      .populate('teacher', 'name'); // Get teacher name
+    
+    if (!books || books.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "لم يتم العثور على كتب لهذا المعلم"
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: books
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "حدث خطأ أثناء جلب الكتب",
+      error: error.message
+    });
+  }
+};
+
 // Middleware for file upload
 export const uploadBookImage = upload.single('bookImage');

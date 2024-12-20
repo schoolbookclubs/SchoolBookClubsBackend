@@ -6,7 +6,8 @@ import {
   getStudentReadingClubEvaluations,
   updateReadingClubEvaluation,
   deleteReadingClubEvaluation,
-  getEvaluationsBySchoolCode
+  getEvaluationsBySchoolCode,
+  getStudentEvaluationsWithDetails
 } from './ReadingClubEvaluation.controller.js';
 
 const router = express.Router();
@@ -26,5 +27,8 @@ router.route('/student/:studentId')
 
 router.route('/oneschool/:schoolCode/ReadingClubEvaluations')
   .get(getEvaluationsBySchoolCode);
+
+// Route to get student evaluations with details
+router.get('/getStudentEvaluationsWithDetails/:studentId', getStudentEvaluationsWithDetails);
 
 export default router;

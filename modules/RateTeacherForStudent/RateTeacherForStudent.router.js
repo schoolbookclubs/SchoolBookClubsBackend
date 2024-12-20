@@ -5,17 +5,17 @@ import {
     getRatingsByStudent,
     getRatingsTeacherById,
     getRatingsBySchoolCode,
-    getStudentAttendanceBySchool
+    getStudentAttendanceBySchool,
+    getRatingsTeacherByhisId
 } from './RateTeacherForStudent.controller.js';
-import { validateTeacherAndStudent } from '../../middleware/teacherRatingMiddleware.js';
 
 const router = express.Router();
 
-// Route to create a rating for a specific student by a teacher
+// Route to create a rating for a specific teacher
 router.post('/:teacherId/:studentId', 
-    validateTeacherAndStudent, 
     createRating
 );
+
 
 // Route to get all ratings for a specific teacher
 router.get('/teacher/:teacherId', 
@@ -32,7 +32,13 @@ router.get('/oneschool/:schoolCode/Teachersratings',
     getRatingsBySchoolCode
 );
 
+// Route to get all ratings for a specific teacher
+router.get('/teacherrates/:teacherId', 
+    getRatingsTeacherByhisId
+);
+
 // Route to get student attendance by school code
 router.get('/attendance/oneschool/:schoolCode', getStudentAttendanceBySchool);
+
 
 export default router;

@@ -14,6 +14,15 @@ export const createReadingClubEvaluation = async (req, res) => {
       booksToAddToNextList
     } = req.body;
 
+    // Check if student has already submitted an evaluation
+    const existingEvaluation = await ReadingClubEvaluation.findOne({ studentId });
+    if (existingEvaluation) {
+      return res.status(400).json({
+        success: false,
+        message: "لقد قمت بتقييم النادي مسبقاً"
+      });
+    }
+
     const newEvaluation = await ReadingClubEvaluation.create({
       studentId,
       schoolCode,
@@ -117,6 +126,34 @@ export const getEvaluationsBySchoolCode = async (req, res) => {
     res.status(400).json({
       success: false,
       message: error.message
+    });
+  }
+};
+
+// Get Reading Club Evaluations for a specific student with student details
+export const getStudentEvaluationsWithDetails = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+    
+    const evaluations = await ReadingClubEvaluation.find({ studentId })
+      .populate('studentId', 'name'); // Get student name
+    
+    if (!evaluations || evaluations.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "لم يتم العثور على تقييمات لهذا الطالب"
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: evaluations
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "حدث خطأ أثناء جلب تقييمات الطالب",
+      error: error.message
     });
   }
 };

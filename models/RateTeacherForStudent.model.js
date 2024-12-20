@@ -11,17 +11,17 @@ const RateTeacherForStudentSchema = new mongoose.Schema({
         ref: 'Student',
         required: true
     },
-    book :{
+    book: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Book',
         required: true
     },
-    audience :{
+    audience: {
         type: String,
-        enum : ['نعم', 'لا'],
+        enum: ['نعم', 'لا'],
         required: true
     },
-    schoolCode :{
+    schoolCode: {
         type: String,
         required: true
     },
@@ -128,7 +128,8 @@ const RateTeacherForStudentSchema = new mongoose.Schema({
     }
 });
 
-RateTeacherForStudentSchema.methods.calculateAverageRating = function() {
+// حساب متوسط تقييم جميع المهارات للطالب الواحد
+RateTeacherForStudentSchema.methods.calculateAverageRating = function () {
     const ratingKeys = [
         'readingSkills.completeReading',
         'readingSkills.deepUnderstanding',
@@ -145,16 +146,54 @@ RateTeacherForStudentSchema.methods.calculateAverageRating = function() {
         'socialSkills.buildingFriendships',
         'generalBehavior.collaboration'
     ];
-    
+
     const total = ratingKeys.reduce((sum, key) => {
         const keys = key.split('.');
         return sum + (this[keys[0]][keys[1]] || 0);
     }, 0);
-    
+
     return total / ratingKeys.length;
 };
 
-RateTeacherForStudentSchema.post('save', function(doc) {
+// حساب متوسط مهارة معينة لجميع الطلاب
+RateTeacherForStudentSchema.statics.calculateSkillAverage = async function (skillPath) {
+    const ratings = await this.find();
+    const skillValues = ratings.map(rating => {
+        const keys = skillPath.split('.');
+        const value = keys.length === 1 ? rating[keys[0]] : rating[keys[0]][keys[1]];
+        return value ? Number(value) : 0;
+    });
+    const total = skillValues.reduce((sum, value) => sum + value, 0);
+    const average = skillValues.length ? Number((total / skillValues.length).toFixed(2)) : 0;
+    return average;
+};
+
+// حساب متوسط مهارة معينة لجميع الطلاب لكتاب معين
+RateTeacherForStudentSchema.statics.calculateBookSkillAverage = async function(skillPath, bookId) {
+    const ratings = await this.find({ book: bookId });
+    if (ratings.length === 0) return 0;
+
+    const total = ratings.reduce((sum, rating) => {
+        return sum + rating.get(skillPath);
+    }, 0);
+
+    return total / ratings.length;
+};
+
+// حساب متوسط جميع المهارات للكتاب
+RateTeacherForStudentSchema.statics.calculateBookAverageRating = async function(bookId) {
+    const ratings = await this.find({ book: bookId });
+    if (ratings.length === 0) return 0;
+
+    const total = ratings.reduce((sum, rating) => {
+        return sum + rating.calculateAverageRating();
+    }, 0);
+
+    return total / ratings.length;
+};
+
+// تحديث متوسط التقييم للطالب عند الحفظ
+RateTeacherForStudentSchema.post('save', function (doc) {
     doc.averageRating = doc.calculateAverageRating();
     doc.save();
 });

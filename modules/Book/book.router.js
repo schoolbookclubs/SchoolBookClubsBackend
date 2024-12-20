@@ -5,7 +5,8 @@ import {
     updateBook, 
     deleteBook,
     uploadBookImage,
-    getBooksBySchoolCode 
+    getBooksBySchoolCode,
+    getBooksByTeacherId
 } from './book.controller.js';
 import { protect } from './book.middleware.js';
 
@@ -31,5 +32,8 @@ router
 
 // Route to get books by school code without middleware
 router.post('/getBooksBySchoolCode', getBooksBySchoolCode);
+
+// Route to get books by teacher ID (no middleware)
+router.get('/teacher/:teacherId/books', getBooksByTeacherId);
 
 export default router;

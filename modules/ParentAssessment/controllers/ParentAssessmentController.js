@@ -4,6 +4,17 @@ class ParentAssessmentController {
   // Create a new parent assessment
   static async createParentAssessment(req, res) {
     try {
+      const { parentId } = req.body;
+
+      // Check if parent has already submitted an assessment
+      const existingAssessment = await ParentAssessment.findOne({ parentId });
+      if (existingAssessment) {
+        return res.status(400).json({
+          success: false,
+          message: "لقد قمت بإضافة تقييم مسبقاً"
+        });
+      }
+
       const assessmentData = {
         parentId: req.body.parentId,
         schoolCode: req.body.schoolCode,
@@ -20,16 +31,14 @@ class ParentAssessmentController {
       const savedAssessment = await newAssessment.save();
 
       res.status(201).json({
-        status: 200,
         success: true,
-        message: 'Parent assessment created successfully',
+        message: 'تم إضافة التقييم بنجاح',
         assessment: savedAssessment
       });
     } catch (error) {
       res.status(400).json({
-        status: 400,
         success: false,
-        message: 'Error creating parent assessment',
+        message: 'فشل في إضافة التقييم',
         error: error.message
       });
     }
@@ -119,6 +128,34 @@ class ParentAssessmentController {
     } catch (error) {
       res.status(500).json({
         message: 'Error retrieving assessments',
+        error: error.message
+      });
+    }
+  }
+
+  // Get parent assessments with details
+  static async getParentAssessmentsWithDetails(req, res) {
+    try {
+      const { parentId } = req.params;
+      
+      const assessments = await ParentAssessment.find({ parentId })
+        .populate('parentId', 'name'); // Get parent name
+      
+      if (!assessments || assessments.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: "لم يتم العثور على تقييمات لهذا الوالد"
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        data: assessments
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: "حدث خطأ أثناء جلب تقييمات الوالد",
         error: error.message
       });
     }
