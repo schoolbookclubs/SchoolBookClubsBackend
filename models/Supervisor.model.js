@@ -9,7 +9,8 @@ const SupervisorSchema = new mongoose.Schema({
   phone: { type: String },
   role: { type: String, default: 'مشرف'},
   schoolCode: { type: String},
-  schoolId: { type: mongoose.Schema.Types.ObjectId, ref: 'School' }
+  schoolId: { type: mongoose.Schema.Types.ObjectId, ref: 'School' },
+  verifiedCode: { type: String }
 });
 
 // Encrypt the password before saving

@@ -9,6 +9,7 @@ router.post('/forget-password', studentController.forgetPassword);
 router.put('/:id', studentController.updateStudent);
 router.delete('/:id', studentController.deleteStudent);
 router.post('/AllStudentsBySchoolCode', studentController.getStudentsBySchoolCode);
-
+router.post('/generate-verification-code', studentController.generateVerificationCode);
+router.post('/verify-code-reset-password', studentController.verifyCodeAndResetPassword);
 
 export default router;

@@ -7,7 +7,9 @@ import {
     deleteSupervisor,
     getAllSupervisors,
     getSupervisor,
-    forgetPasswordSupervisor
+    forgetPasswordSupervisor,
+    generateVerificationCode,
+    verifyCodeAndResetPassword
 } from './supervisor.controller.js';
 
 const router = express.Router();
@@ -23,5 +25,6 @@ router.put('/:id', updateSupervisor);
 router.delete('/:id', deleteSupervisor);
 router.get('/', getAllSupervisors);
 router.get('/:id', getSupervisor);
-
+router.post('/generate-verification-code', generateVerificationCode);
+router.post('/verify-code-reset-password', verifyCodeAndResetPassword);
 export default router;

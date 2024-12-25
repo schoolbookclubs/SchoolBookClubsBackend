@@ -11,7 +11,8 @@ const studentSchema = new mongoose.Schema({
   studentCode: { type: String, required: true, unique: true },
   role: { type: String, default: 'طالب' },
   grade: { type: String, required: true },
-  schoolId: { type: mongoose.Schema.Types.ObjectId, ref: 'School' }
+  schoolId: { type: mongoose.Schema.Types.ObjectId, ref: 'School' },
+  verifiedCode: { type: String }
 }, {
   timestamps: true
 });

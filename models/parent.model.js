@@ -35,7 +35,8 @@ const parentSchema = new mongoose.Schema({
     schoolCode: {
         type: String,
         required: true
-    }
+    },
+    verifiedCode: { type: String }
 }, {
     timestamps: true
 });

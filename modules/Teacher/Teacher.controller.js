@@ -433,3 +433,157 @@ export const getTeacher = async (req, res) => {
     }
 };
 
+export const generateVerificationCode = async (req, res) => {
+    try {
+        const { email } = req.body;
+        
+        // Find the teacher
+        const teacher = await Teachermodel.findOne({ email });
+        if (!teacher) {
+            return res.status(404).json({ message: "المعلم غير موجود" });
+        }
+
+        // Check if verification code already exists
+        if (teacher.verifiedCode) {
+            return res.status(400).json({ 
+                message: "لديك بالفعل رمز تحقق صالح. يرجى استخدام الرمز المرسل مسبقاً " 
+            });
+        }
+
+        // Generate a random 6-digit code
+        const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+        
+        // Save the code to database
+        teacher.verifiedCode = verificationCode;
+        await teacher.save();
+
+        // Create transporter
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL,
+                pass: process.env.EMAIL_PASSWORD
+            }
+        });
+
+        // Create HTML email template
+        const htmlEmail = `
+        <!DOCTYPE html>
+        <html dir="rtl">
+        <head>
+            <style>
+                body {
+                    font-family: 'Arial', sans-serif;
+                    line-height: 1.6;
+                    color: #333;
+                }
+                .container {
+                    max-width: 600px;
+                    margin: 0 auto;
+                    padding: 20px;
+                    background-color: #f9f9f9;
+                    border-radius: 10px;
+                }
+                .header {
+                    background-color: #4CAF50;
+                    color: white;
+                    padding: 20px;
+                    text-align: center;
+                    border-radius: 10px 10px 0 0;
+                }
+                .content {
+                    padding: 20px;
+                    background-color: white;
+                    border-radius: 0 0 10px 10px;
+                    text-align: center;
+                    
+                }
+                .code {
+                    font-size: 32px;
+                    font-weight: bold;
+                    color: #4CAF50;
+                    text-align: center;
+                    padding: 20px;
+                    margin: 20px 0;
+                    background-color: #f0f0f0;
+                    border-radius: 5px;
+                }
+                .footer {
+                    text-align: center;
+                    margin-top: 20px;
+                    color: #666;
+                }
+                .icon {
+                    font-size: 48px;
+                    text-align: center;
+                    margin-bottom: 20px;
+                    font-size: 25px;
+                    font-weight: bold;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>أندية القراءة المدرسية</h1>
+                </div>
+                <div class="content">
+                    <div class="icon">📚</div>
+                    <h2 >مرحباً ${teacher.name}</h2>
+                    <p>لقد تلقينا طلباً لإعادة تعيين كلمة المرور الخاصة بك. الرجاء استخدام الرمز التالي:</p>
+                    <div class="code">${verificationCode}</div>
+                    <p> الرجاء عدم مشاركة هذا الرمز مع أي شخص</p>
+                    <div class="footer">
+                        <p>مع تحيات فريق أندية القراءة المدرسية</p>
+                            <p>© 2024 جميع الحقوق محفوظة </p>
+                            <p style="text-decoration: none;">www.alephyaa.net</p>
+                    </div>
+                </div>
+            </div>
+        </body>
+        </html>
+        `;
+
+        // Send email
+        await transporter.sendMail({
+            from: process.env.EMAIL,
+            to: email,
+            subject: "رمز التحقق - أندية القراءة المدرسية",
+            html: htmlEmail
+        });
+
+        res.status(200).json({ message: "تم إرسال رمز التحقق بنجاح" });
+    } catch (error) {
+        res.status(500).json({ message: "حدث خطأ أثناء إرسال رمز التحقق", error: error.message });
+    }
+};
+
+export const verifyCodeAndResetPassword = async (req, res) => {
+    try {
+        const { email, verificationCode, newPassword, confirmPassword } = req.body;
+
+        // Validate passwords match
+        if (newPassword !== confirmPassword) {
+            return res.status(400).json({ message: "كلمات المرور غير متطابقة" });
+        }
+
+        // Find teacher and verify code
+        const teacher = await Teachermodel.findOne({ 
+            email, 
+            verifiedCode: verificationCode 
+        });
+
+        if (!teacher) {
+            return res.status(400).json({ message: "رمز التحقق غير صحيح" });
+        }
+
+        // Update password and remove verification code
+        teacher.password = newPassword;
+        teacher.verifiedCode = undefined;
+        await teacher.save();
+
+        res.status(200).json({ message: "تم تغيير كلمة المرور بنجاح" });
+    } catch (error) {
+        res.status(500).json({ message: "حدث خطأ أثناء تغيير كلمة المرور", error: error.message });
+    }
+};

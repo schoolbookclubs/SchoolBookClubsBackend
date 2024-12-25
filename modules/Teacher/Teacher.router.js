@@ -7,7 +7,9 @@ import {
     deleteTeacher, 
     getAllTeachers, 
     getTeacher, 
-    forgetPasswordTeacher} from './Teacher.controller.js';
+    forgetPasswordTeacher,
+    generateVerificationCode,
+    verifyCodeAndResetPassword} from './Teacher.controller.js';
 
 const router = express.Router();
 
@@ -16,6 +18,8 @@ router.post('/signupTeacher', signupTeacher);
 router.post('/complete-profile-teacher', completeProfileTeacher);
 router.post('/loginTeacher', loginTeacher);
 router.post('/forget-password', forgetPasswordTeacher);
+router.post('/generate-verification-code', generateVerificationCode);
+router.post('/verify-code-reset-password', verifyCodeAndResetPassword);
 
 // CRUD routes
 router.put('/:id', updateTeacher);
@@ -26,7 +30,3 @@ router.get('/:id', getTeacher);
 // Get students by school code
 
 export default router;
-
-
-
-
