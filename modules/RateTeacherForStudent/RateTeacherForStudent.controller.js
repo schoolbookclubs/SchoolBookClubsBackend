@@ -133,12 +133,18 @@ export const getRatingsBySchoolCode = async (req, res) => {
                 $unwind: '$bookData'
             },
             {
+                $addFields: {
+                    teacherName: '$teacherData.name' // إضافة اسم المعلم
+                }
+            },
+            {
                 $group: {
                     _id: '$book',
                     bookTitle: { $first: '$bookData.title' },
                     ratings: {
                         $push: {
                             student: '$studentData.name',
+                            teacher: '$teacherName', // تضمين اسم المعلم
                             ratings: {
                                 readingSkills: '$readingSkills',
                                 confidence: '$confidence',
@@ -237,6 +243,7 @@ export const getRatingsBySchoolCode = async (req, res) => {
         });
     }
 };
+
 
 export const getRatingsTeacherByhisId = async (req, res) => {
     try {
