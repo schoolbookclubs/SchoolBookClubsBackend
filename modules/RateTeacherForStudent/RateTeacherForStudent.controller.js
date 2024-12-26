@@ -420,3 +420,4 @@ export const getStudentAttendanceBySchool = async (req, res) => {
         });
     }
 };
+

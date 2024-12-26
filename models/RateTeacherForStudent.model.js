@@ -28,45 +28,45 @@ const RateTeacherForStudentSchema = new mongoose.Schema({
     readingSkills: {
         completeReading: {
             type: Number,
-            min: 1,
+            min: 0,
             max: 5,
             required: true
         },
         deepUnderstanding: {
             type: Number,
-            min: 1,
+            min: 0,
             max: 5,
             required: true
         },
         personalReflection: {
             type: Number,
-            min: 1,
+            min: 0,
             max: 5,
             required: true
         }
     },
     confidence: {
         type: Number,
-        min: 1,
+        min: 0,
         max: 5,
         required: true
     },
     criticalThinking: {
         creativeIdeas: {
             type: Number,
-            min: 1,
+            min: 0,
             max: 5,
             required: true
         },
         connectingExperiences: {
             type: Number,
-            min: 1,
+            min: 0,
             max: 5,
             required: true
         },
         independentThinking: {
             type: Number,
-            min: 1,
+            min: 0,
             max: 5,
             required: true
         }
@@ -74,19 +74,19 @@ const RateTeacherForStudentSchema = new mongoose.Schema({
     communicationSkills: {
         clearExpression: {
             type: Number,
-            min: 1,
+            min: 0,
             max: 5,
             required: true
         },
         activeListening: {
             type: Number,
-            min: 1,
+            min: 0,
             max: 5,
             required: true
         },
         constructiveFeedback: {
             type: Number,
-            min: 1,
+            min: 0,
             max: 5,
             required: true
         }
@@ -94,19 +94,19 @@ const RateTeacherForStudentSchema = new mongoose.Schema({
     socialSkills: {
         activeParticipation: {
             type: Number,
-            min: 1,
+            min: 0,
             max: 5,
             required: true
         },
         respectingDiversity: {
             type: Number,
-            min: 1,
+            min: 0,
             max: 5,
             required: true
         },
         buildingFriendships: {
             type: Number,
-            min: 1,
+            min: 0,
             max: 5,
             required: true
         }
@@ -114,7 +114,7 @@ const RateTeacherForStudentSchema = new mongoose.Schema({
     generalBehavior: {
         collaboration: {
             type: Number,
-            min: 1,
+            min: 0,
             max: 5,
             required: true
         }
