@@ -6,7 +6,8 @@ import {
     getRatingsTeacherById,
     getRatingsBySchoolCode,
     getStudentAttendanceBySchool,
-    getRatingsTeacherByhisId
+    getRatingsTeacherByhisId,
+    getRatingsByBookId
 } from './RateTeacherForStudent.controller.js';
 
 const router = express.Router();
@@ -40,5 +41,6 @@ router.get('/teacherrates/:teacherId',
 // Route to get student attendance by school code
 router.get('/attendance/oneschool/:schoolCode', getStudentAttendanceBySchool);
 
-
+// Route to get all ratings for a specific book
+router.get('/book/:bookId', getRatingsByBookId);
 export default router;

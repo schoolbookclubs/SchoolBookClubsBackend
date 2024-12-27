@@ -421,3 +421,32 @@ export const getStudentAttendanceBySchool = async (req, res) => {
     }
 };
 
+export const getRatingsByBookId = async (req, res) => {
+    try {
+        const { bookId } = req.params;
+
+        // Find all ratings for the specified book
+        const ratings = await RateTeacherForStudent.find({ book: bookId })
+            .populate('teacher', 'name') // Populate teacher name
+            .populate('student', 'name') // Populate student name
+            .populate('book', 'title');  // Populate book title
+
+        if (!ratings || ratings.length === 0) {
+            return res.status(404).json({
+                message: 'لا يوجد تقييمات لهذا الكتاب',
+                error: 'NO_RATINGS_FOUND'
+            });
+        }
+
+        res.status(200).json({
+            message: 'تم جلب التقييمات بنجاح',
+            ratings: ratings,
+            length: ratings.length
+        });
+    } catch (error) {
+        res.status(500).json({ 
+            message: 'حدث خطأ أثناء جلب التقييمات', 
+            error: error.message 
+        });
+    }
+};

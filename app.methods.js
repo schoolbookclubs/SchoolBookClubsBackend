@@ -13,6 +13,8 @@ import StudentSelfAssessmentRouter from "./modules/StudentSelfAssessment/routes/
 import ParentAssessmentRouter from "./modules/ParentAssessment/routes/ParentAssessmentRoutes.js";
 import ReadingClubEvaluationRouter from "./modules/ReadingClubEvaluation/ReadingClubEvaluation.router.js";
 import PasswordRouter from "./modules/passwordsystem/routes/passwordRoutes.js";
+import generalSupervisorRouter from "./modules/generalSupervisors/generalSupervisors.router.js";
+
 dotenv.config();
 
 export const appMethods = (app, express) => {
@@ -31,6 +33,7 @@ export const appMethods = (app, express) => {
     app.use("/api/ParentAssessment",ParentAssessmentRouter)
     app.use("/api/ReadingClubEvaluation",ReadingClubEvaluationRouter)
     app.use("/api/password",PasswordRouter)
+    app.use("/api/GeneralSupervisor",generalSupervisorRouter)
     app.get("/", (req, res, next) => {
         const temp = `
         <!DOCTYPE html>
