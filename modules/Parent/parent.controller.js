@@ -63,7 +63,7 @@ export const signup = async (req, res) => {
             role,
             phone,
             schoolCode,
-            studentName: student.name
+            
         });
         await parent.save();
 
@@ -75,7 +75,8 @@ export const signup = async (req, res) => {
             name: parent.name, 
             role: parent.role,
             phone: parent.phone,
-            schoolCode: parent.schoolCode
+            schoolCode: parent.schoolCode,
+            studentName: student.name
         }, process.env.JWT_SECRET);
 
         // Save token
