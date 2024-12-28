@@ -9,6 +9,9 @@ const parentTokenSchema = new mongoose.Schema({
     token: {
         type: String,
         required: true
+    },
+    schoolCode: {
+        type: String
     }
 }, {
     timestamps: true

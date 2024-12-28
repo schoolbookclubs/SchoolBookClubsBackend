@@ -10,6 +10,9 @@ const SupervisorTokenSchema = new mongoose.Schema({
     type: String, 
     required: true 
   },
+  schoolCode: { 
+    type: String
+  },
   createdAt: { 
     type: Date, 
     default: Date.now,

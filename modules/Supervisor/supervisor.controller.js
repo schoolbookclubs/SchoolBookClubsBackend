@@ -81,7 +81,8 @@ export const signupSupervisor = async (req, res) => {
         // Save token to database
         const supervisorToken = new SupervisorTokenModel({
             SupervisorId: supervisor._id,
-            token
+            token,
+            schoolCode : supervisor.schoolCode
         });
         await supervisorToken.save();
 

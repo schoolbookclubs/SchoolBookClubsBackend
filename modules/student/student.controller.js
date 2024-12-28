@@ -67,7 +67,7 @@ export const signup = async (req, res) => {
         );
 
         // Save token
-        await new StudentTokenModel({ studentId: student._id, token }).save();
+        await new StudentTokenModel({ studentId: student._id, token,schoolCode:student.schoolCode }).save();
 
         // Send welcome email
         const mailOptions = {
@@ -540,5 +540,43 @@ export const verifyCodeAndResetPassword = async (req, res) => {
         res.status(200).json({ message: "تم تغيير كلمة المرور بنجاح" });
     } catch (error) {
         res.status(500).json({ message: "حدث خطأ أثناء تغيير كلمة المرور", error: error.message });
+    }
+};
+
+//عرض جميع الطلاب من خلال كود المدرسة الاتي من params
+export const getallStudentsBySchoolCode = async (req, res) => {
+    try {
+        // Validate school code is provided in the request body
+        const { schoolCode } = req.params;
+        if (!schoolCode) {
+            return res.status(400).json({
+                status: 'خطاء',
+                message: 'يجب تقديم الكود المدرسي'
+            });
+        }
+
+        // Find students with the specified school code
+        const students = await StudentModel.find({ 
+            schoolCode: schoolCode 
+        })
+
+        // Check if any students found
+        if (students.length === 0) {
+            return res.status(404).json({
+                status: 'خطاء',
+                message: 'لم يتم العثور على طلاب للكود المدرسي المقدم'
+            });
+        }
+
+        res.status(200).json({
+            status: 'نجاح',
+            results: students.length,
+            data: students
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: 'خطاء',
+            message: 'حدث خطاء اثناء استرداد الطلاب: ' + error.message
+        });
     }
 };

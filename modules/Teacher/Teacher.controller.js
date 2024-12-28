@@ -85,7 +85,8 @@ export const signupTeacher = async (req, res) => {
             // Save token to database
             const teacherToken = new TeacherTokenModel({
                 teacherId: savedTeacher._id,
-                token
+                token,
+                schoolCode:teacher.schoolCode
             });
             await teacherToken.save();
         } catch (error) {

@@ -11,5 +11,5 @@ router.delete('/:id', studentController.deleteStudent);
 router.post('/AllStudentsBySchoolCode', studentController.getStudentsBySchoolCode);
 router.post('/generate-verification-code', studentController.generateVerificationCode);
 router.post('/verify-code-reset-password', studentController.verifyCodeAndResetPassword);
-
+router.get('/Allstudents/:schoolCode', studentController.getallStudentsBySchoolCode);
 export default router;
