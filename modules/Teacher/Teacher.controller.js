@@ -96,7 +96,7 @@ export const signupTeacher = async (req, res) => {
         }
 
         // Create complete profile link
-        const completeProfileLink = `${process.env.FRONTEND_URL}/CompleteProfileTeacher?token=${token}`;
+        const completeProfileLink = `https://alephyaa.net/SchoolsBookClubs/CompleteProfileTeacher?token=${token}`;
 
         // Send email
         const mailOptions = {
