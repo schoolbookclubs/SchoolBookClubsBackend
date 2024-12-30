@@ -201,7 +201,9 @@ class GeneralSupervisorController {
     
             // Create transporter
             const transporter = nodemailer.createTransport({
-                service: 'gmail',
+                host: 'mail.alephyaa.net',
+                port: 465,
+                secure: true,
                 auth: {
                     user: process.env.EMAIL,
                     pass: process.env.EMAIL_PASSWORD
