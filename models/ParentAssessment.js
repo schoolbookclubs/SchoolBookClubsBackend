@@ -52,6 +52,9 @@ const ParentAssessmentSchema = new mongoose.Schema({
     max: 5,
     required: true
   },
+  averageRating: {
+    type: Number
+  },
   createdAt: {
     type: Date,
     default: Date.now
@@ -72,5 +75,35 @@ ParentAssessmentSchema.methods.calculateAverageRating = function() {
   const total = ratingKeys.reduce((sum, key) => sum + (this[key] || 0), 0);
   return total / ratingKeys.length;
 };
+
+// حساب متوسط مهارة معينة لجميع اولياء الامور
+ParentAssessmentSchema.statics.calculateSkillAverage = async function(skillName) {
+  const ratings = await this.find();
+  if (ratings.length === 0) return 0;
+
+  const total = ratings.reduce((sum, rating) => {
+    return sum + (rating[skillName] || 0);
+  }, 0);
+
+  return Number((total / ratings.length).toFixed(2));
+};
+
+// حساب متوسط مهارة معينة لجميع اولياء الامور في مدرسة معينة
+ParentAssessmentSchema.statics.calculateSchoolSkillAverage = async function(skillName, schoolCode) {
+  const ratings = await this.find({ schoolCode });
+  if (ratings.length === 0) return 0;
+
+  const total = ratings.reduce((sum, rating) => {
+    return sum + (rating[skillName] || 0);
+  }, 0);
+
+  return Number((total / ratings.length).toFixed(2));
+};
+
+// تحديث متوسط التقييم عند الحفظ
+ParentAssessmentSchema.post('save', function(doc) {
+  doc.averageRating = doc.calculateAverageRating();
+  doc.save();
+});
 
 export default mongoose.model('ParentAssessment', ParentAssessmentSchema);
