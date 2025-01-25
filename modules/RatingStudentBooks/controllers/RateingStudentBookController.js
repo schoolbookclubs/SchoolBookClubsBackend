@@ -117,56 +117,86 @@ class RateingStudentBookController {
   }
 
   // Get count of unique rated books by school code
-  static async getUniqueRatedBooksCount(req, res) {
-    try {
-      const { schoolCode } = req.params;
+ static async getUniqueRatedBooksCount(req, res) {
+  try {
+    const { schoolCode } = req.params;
 
-      // Get unique bookIds for the school
-      const uniqueBooks = await RateingStudentBook.distinct('bookId', { schoolCode });
-      
-      // Get detailed information about the books
-      const booksWithDetails = await RateingStudentBook.find({
-        schoolCode,
-        bookId: { $in: uniqueBooks }
-      })
-      .populate('bookId', 'title author')
-      .populate('studentId', 'name')
-      .lean();
+    // Add null check for bookId
+    const uniqueBooks = await RateingStudentBook.distinct('bookId', { 
+      schoolCode,
+      bookId: { $exists: true, $ne: null } // Filter out null bookIds
+    });
 
-      // Create a map to store unique books with their details
-      const uniqueBooksMap = new Map();
-      booksWithDetails.forEach(rating => {
-        if (!uniqueBooksMap.has(rating.bookId._id.toString())) {
-          uniqueBooksMap.set(rating.bookId._id.toString(), {
-            book: rating.bookId,
-            readCount: 1,
-            readers: [rating.studentId]
-          });
-        } else {
-          const bookData = uniqueBooksMap.get(rating.bookId._id.toString());
-          if (!bookData.readers.some(reader => reader._id.toString() === rating.studentId._id.toString())) {
-            bookData.readCount++;
-            bookData.readers.push(rating.studentId);
-          }
+    // Handle case with no books
+    if (!uniqueBooks.length) {
+      return res.status(200).json({
+        message: 'لا توجد كتب مقروءة بعد',
+        data: {
+          totalUniqueBooks: 0,
+          books: []
         }
       });
-
-      const result = {
-        totalUniqueBooks: uniqueBooks.length,
-        books: Array.from(uniqueBooksMap.values())
-      };
-
-      res.status(200).json({
-        message: 'تم جلب عدد الكتب المقروءة بنجاح',
-        data: result
-      });
-    } catch (error) {
-      res.status(500).json({
-        message: 'حدث خطأ في جلب عدد الكتب المقروءة',
-        error: error.message
-      });
     }
+
+    // Add proper population with error handling
+    const booksWithDetails = await RateingStudentBook.find({
+      schoolCode,
+      bookId: { $in: uniqueBooks }
+    })
+    .populate({
+      path: 'bookId',
+      select: 'title author',
+      match: { _id: { $exists: true } } // Ensure book exists
+    })
+    .populate('studentId', 'name')
+    .lean();
+
+    // Filter out invalid entries
+    const validRatings = booksWithDetails.filter(rating => 
+      rating.bookId && rating.bookId._id && rating.studentId
+    );
+
+    const uniqueBooksMap = new Map();
+    
+    validRatings.forEach(rating => {
+      const bookIdStr = rating.bookId._id.toString();
+      
+      if (!uniqueBooksMap.has(bookIdStr)) {
+        uniqueBooksMap.set(bookIdStr, {
+          book: rating.bookId,
+          readCount: 1,
+          readers: [rating.studentId]
+        });
+      } else {
+        const bookData = uniqueBooksMap.get(bookIdStr);
+        const exists = bookData.readers.some(reader => 
+          reader._id.toString() === rating.studentId._id.toString()
+        );
+        
+        if (!exists) {
+          bookData.readCount++;
+          bookData.readers.push(rating.studentId);
+        }
+      }
+    });
+
+    const result = {
+      totalUniqueBooks: uniqueBooks.length,
+      books: Array.from(uniqueBooksMap.values())
+    };
+
+    res.status(200).json({
+      message: 'تم جلب عدد الكتب المقروءة بنجاح',
+      data: result
+    });
+  } catch (error) {
+    console.error('Error in getUniqueRatedBooksCount:', error);
+    res.status(500).json({
+      message: 'حدث خطأ في جلب عدد الكتب المقروءة',
+      error: error.message
+    });
   }
+}
 
   // Get all ratings for a specific student with book and student details
   static async getStudentRatingsWithDetails(req, res) {
