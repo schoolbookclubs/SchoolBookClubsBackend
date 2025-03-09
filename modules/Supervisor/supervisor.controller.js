@@ -282,7 +282,9 @@ export const loginSupervisor = async (req, res) => {
         const { email, password } = req.body;
 
         // Find supervisor
-        const supervisor = await Supervisormodel.findOne({ email });
+        const supervisor = await Supervisormodel.findOne({ 
+    email: { $regex: new RegExp(`^${email}$`, 'i') } 
+});
         if (!supervisor) {
             return res.status(404).json({ message: 'بريد الكتروني غير صالح' });
         }
