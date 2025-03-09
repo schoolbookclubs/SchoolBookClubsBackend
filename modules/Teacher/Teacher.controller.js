@@ -448,9 +448,8 @@ export const generateVerificationCode = async (req, res) => {
         const { email } = req.body;
         
         // Find the teacher
-        const teacher = await Teachermodel.findOne({ 
-    email: { $regex: new RegExp(`^${email}$`, 'i') } 
-});
+        const teacher = await Teachermodel.findOne({ email });
+
         if (!teacher) {
             return res.status(404).json({ message: "المعلم غير موجود" });
         }
