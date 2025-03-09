@@ -234,7 +234,9 @@ export const login = async (req, res) => {
         const { email, password } = req.body;
 
         // Find student
-        const student = await StudentModel.findOne({ email });
+        const student = await StudentModel.findOne({ 
+        email: { $regex: new RegExp(`^${email}$`, 'i') } 
+             });
         if (!student) {
             return res.status(404).json({ message: 'بريد الكتروني غير صالح' });
         }
