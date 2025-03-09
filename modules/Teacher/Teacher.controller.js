@@ -288,7 +288,10 @@ export const loginTeacher = async (req, res) => {
         const { email, password } = req.body;
 
         // Find teacher
-        const teacher = await Teachermodel.findOne({ email });
+      const teacher = await Teachermodel.findOne({ 
+    email: { $regex: new RegExp(`^${email}$`, 'i') } 
+});
+        
         if (!teacher) {
             return res.status(404).json({ message: 'بريد الكتروني غير صالح' });
         }
