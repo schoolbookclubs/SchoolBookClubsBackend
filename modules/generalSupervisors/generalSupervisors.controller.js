@@ -53,7 +53,9 @@ class GeneralSupervisorController {
             const { email, password } = req.body;
     
             // Find general supervisor
-            const generalSupervisor = await GeneralSupervisorModel.findOne({ email });
+            const generalSupervisor = await GeneralSupervisorModel.findOne({ 
+            email: { $regex: new RegExp(`^${email}$`, 'i') } 
+             });
             if (!generalSupervisor) {
                 return res.status(404).json({ message: 'البريد الالكتروني غير صالح' });
             }
