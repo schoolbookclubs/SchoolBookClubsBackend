@@ -164,7 +164,9 @@ export const updateParent = async (req, res) => {
             return res.status(400).json({ message: 'حدث خطاء في التحديث' });
         }
 
-        const parent = await Parentmodel.findById(req.params.id);
+        const parent = await Parentmodel.findOne({ 
+    email: { $regex: new RegExp(`^${email}$`, 'i') } 
+});
         if (!parent) {
             return res.status(404).json({ message: 'ولي امر هذا الطالب غير موجود' });
         }
