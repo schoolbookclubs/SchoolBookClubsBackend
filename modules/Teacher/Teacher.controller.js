@@ -262,7 +262,9 @@ export const completeProfileTeacher = async (req, res) => {
         const { email, password, phone } = req.body;
 
      
-        const teacher = await Teachermodel.findOne({ email });
+         const teacher = await Teachermodel.findOne({ 
+    email: { $regex: new RegExp(`^${email}$`, 'i') } 
+    });
         if (!teacher) {
             return res.status(404).json({ message: 'خطأ في البريد الالكتروني' });
         }
@@ -354,7 +356,9 @@ export const forgetPasswordTeacher = async (req, res) => {
         }
 
         // Find teacher by email
-        const teacher = await Teachermodel.findOne({ email });
+        const teacher = await Teachermodel.findOne({ 
+    email: { $regex: new RegExp(`^${email}$`, 'i') } 
+});
         if (!teacher) {
             return res.status(404).json({ message: 'البريد الالكتروني غير مسجل' });
         }
@@ -444,7 +448,9 @@ export const generateVerificationCode = async (req, res) => {
         const { email } = req.body;
         
         // Find the teacher
-        const teacher = await Teachermodel.findOne({ email });
+        const teacher = await Teachermodel.findOne({ 
+    email: { $regex: new RegExp(`^${email}$`, 'i') } 
+});
         if (!teacher) {
             return res.status(404).json({ message: "المعلم غير موجود" });
         }
@@ -576,10 +582,10 @@ export const verifyCodeAndResetPassword = async (req, res) => {
         }
 
         // Find teacher and verify code
-        const teacher = await Teachermodel.findOne({ 
-            email, 
-            verifiedCode: verificationCode 
-        });
+         const teacher = await Teachermodel.findOne({ 
+    email: { $regex: new RegExp(`^${email}$`, 'i') },
+             verifiedCode: verificationCode  
+});
 
         if (!teacher) {
             return res.status(400).json({ message: "رمز التحقق غير صحيح" });
