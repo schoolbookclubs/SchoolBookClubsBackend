@@ -309,32 +309,30 @@ export const forgetPassword = async (req, res) => {
 };
 
 export const updateStudent = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const updates = req.body;
-    
-    if (updates.password) {
-      const salt = await bcrypt.genSalt(10);
-      updates.password = await bcrypt.hash(updates.password, salt);
+    try {
+        const { id } = req.params;
+        const { name, email, password,grade } = req.body;
+
+        const updateData = { name, email,grade };
+        if (password) {
+            updateData.password = await bcrypt.hash(password, parseInt(process.env.saltround));
+        }
+
+        const student = await StudentModel.findByIdAndUpdate(
+            id,
+            updateData,
+            { new: true }
+        );
+
+        if (!student) {
+            return res.status(404).json({ message: 'هذا الطالب غير موجود علي نظامنا' });
+        }
+
+        res.json({ success: true, message: 'تم تحديث بيانات الطالب بنجاح' });
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
-
-    const updatedStudent = await Student.findByIdAndUpdate(
-      id,
-      { $set: updates },
-      { new: true, runValidators: true }
-    );
-
-    if (!updatedStudent) {
-      return res.status(404).json({ success: false, message: 'Student not found' });
-    }
-
-    res.json({ success: true, data: updatedStudent });
-  } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      message: error.message || 'Error updating student'
-    });
-  }
 };
 
 export const deleteStudent = async (req, res) => {
