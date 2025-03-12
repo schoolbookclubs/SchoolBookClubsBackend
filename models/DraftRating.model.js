@@ -19,7 +19,6 @@ const DraftRatingSchema  = new mongoose.Schema({
     audience: {
         type: String,
         enum: ['نعم', 'لا'],
-        required: true
     },
     schoolCode: {
         type: String,
