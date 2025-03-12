@@ -8,6 +8,7 @@ import studentRouter from "./modules/student/student.router.js";
 import parentRouter from "./modules/Parent/parent.routes.js";
 import bookRouter from "./modules/Book/book.router.js";
 import RateTeacher from "./modules/RateTeacherForStudent/RateTeacherForStudent.router.js";
+import draftRouter from './DraftRating.router.js';
 import RateingStudentBookRouter from "./modules/RatingStudentBooks/routes/RateingStudentBookRoutes.js";
 import StudentSelfAssessmentRouter from "./modules/StudentSelfAssessment/routes/StudentSelfAssessmentRoutes.js";
 import ParentAssessmentRouter from "./modules/ParentAssessment/routes/ParentAssessmentRoutes.js";
@@ -23,6 +24,7 @@ export const appMethods = (app, express) => {
     app.use(morgan("dev"));
     app.use("/api/school",SchoolRouter)
     app.use("/api/Teacher",TeacherRouter)
+    app.use('/api/drafts', draftRouter)
     app.use("/api/Supervisor",SupervisorRouter)
     app.use("/api/student",studentRouter)
     app.use("/api/parent",parentRouter)
