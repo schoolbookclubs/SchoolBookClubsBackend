@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import SchoolRouter from "./modules/school/school.router.js";
 import TeacherRouter from "./modules/Teacher/Teacher.router.js";
+import draftRouter from './modules/RateTeacherForStudent/DraftRating.router.js';
 import SupervisorRouter from "./modules/Supervisor/supervisor.router.js";
 import studentRouter from "./modules/student/student.router.js";
 import parentRouter from "./modules/Parent/parent.routes.js";
