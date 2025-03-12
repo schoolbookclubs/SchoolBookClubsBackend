@@ -1,6 +1,6 @@
 
-import DraftRating from '../models/DraftRating.model.js';
-import RateTeacherForStudent from '../models/RateTeacherForStudent.model.js';
+import RateTeacherForStudent from '../../models/RateTeacherForStudent.model.js';
+import DraftRating from '../../models/DraftRating.model.js';
 import mongoose from 'mongoose';
 
 export const createDraft = async (req, res) => {
