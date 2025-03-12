@@ -29,6 +29,7 @@ export const appMethods = (app, express) => {
     app.use("/api/parent",parentRouter)
     app.use("/api/Book",bookRouter)
     app.use("/api/RateTeacher",RateTeacher)
+    app.use('/api/drafts', draftRouter)
     app.use("/api/RateingStudentBook",RateingStudentBookRouter)
     app.use("/api/StudentSelfAssessment",StudentSelfAssessmentRouter)
     app.use("/api/ParentAssessment",ParentAssessmentRouter)
