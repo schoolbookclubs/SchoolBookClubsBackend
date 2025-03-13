@@ -1,4 +1,3 @@
-
 import RateTeacherForStudent from '../../models/RateTeacherForStudent.model.js';
 import DraftRating from '../../models/DraftRating.model.js';
 import mongoose from 'mongoose';
@@ -81,30 +80,7 @@ export const publishDraft = async (req, res) => {
         
         if (!draft) return res.status(404).json({ message: 'Draft not found' });
 
-        // Validate required fields
-        const requiredFields = [
-            'readingSkills.completeReading', 'readingSkills.deepUnderstanding',
-            'readingSkills.personalReflection', 'confidence',
-            'criticalThinking.creativeIdeas', 'criticalThinking.connectingExperiences',
-            'criticalThinking.independentThinking', 'communicationSkills.clearExpression',
-            'communicationSkills.activeListening', 'communicationSkills.constructiveFeedback',
-            'socialSkills.activeParticipation', 'socialSkills.respectingDiversity',
-            'socialSkills.buildingFriendships', 'generalBehavior.collaboration'
-        ];
-
-        const missingFields = requiredFields.filter(field => {
-            const value = field.split('.').reduce((obj, key) => obj?.[key], draft);
-            return value === undefined || value === null;
-        });
-
-        if (missingFields.length > 0) {
-            return res.status(400).json({
-                message: 'Missing required fields for publishing',
-                missingFields
-            });
-        }
-
-        // Create final rating
+        // Create final rating with whatever data exists
         const rating = new RateTeacherForStudent({
             teacher: draft.teacher,
             student: draft.student,
