@@ -1,35 +1,46 @@
 import express from 'express';
-import {
-    createDraft,
-    getDraftsByTeacher,
-    getDraftsByStudent,
-    getDraftById,
-    updateDraft,
-    deleteDraft,
-    publishDraft
+import { 
+    createRating, 
+    getRatingsByTeacher, 
+    getRatingsByStudent,
+    getRatingsTeacherById,
+    getRatingsBySchoolCode,
+    getStudentAttendanceBySchool,
+    getRatingsTeacherByhisId,
+    getRatingsByBookId
 } from './DraftRating.controller.js';
 
 const router = express.Router();
 
-// Create a new draft
-router.post('/', createDraft);
+// Route to create a rating for a specific teacher
+router.post('/:teacherId/:studentId', 
+    createRating
+);
 
-// Get drafts by teacher
-router.get('/teacher/:teacherId', getDraftsByTeacher);
 
-// Get drafts by student
-router.get('/student/:studentId', getDraftsByStudent);
+// Route to get all ratings for a specific teacher
+router.get('/teacher/:teacherId', 
+    getRatingsByTeacher
+);
 
-// Get single draft
-router.get('/:id', getDraftById);
+// Route to get all ratings for a specific student
+router.get('/student/:studentId', 
+    getRatingsByStudent
+);
 
-// Update draft
-router.put('/:id', updateDraft);
+// Route to get ratings by school code
+router.get('/oneschool/:schoolCode/Teachersratings', 
+    getRatingsBySchoolCode
+);
 
-// Delete draft
-router.delete('/:id', deleteDraft);
+// Route to get all ratings for a specific teacher
+router.get('/teacherrates/:teacherId', 
+    getRatingsTeacherByhisId
+);
 
-// Publish draft
-router.post('/publish/:id', publishDraft);
+// Route to get student attendance by school code
+router.get('/attendance/oneschool/:schoolCode', getStudentAttendanceBySchool);
 
+// Route to get all ratings for a specific book
+router.get('/book/:bookId', getRatingsByBookId);
 export default router;
