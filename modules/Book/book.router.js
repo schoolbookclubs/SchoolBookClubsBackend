@@ -31,7 +31,7 @@ router
     .delete(protect, deleteBook);
 
 // Route to get books by school code without middleware
-router.post('/getBooksBySchoolCode', getBooksBySchoolCode);
+router.post('/getBooksBySchoolCode', express.json(), getBooksBySchoolCode);
 
 // Route to get books by teacher ID (no middleware)
 router.get('/teacher/:teacherId/books', getBooksByTeacherId);
