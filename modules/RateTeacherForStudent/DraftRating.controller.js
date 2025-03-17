@@ -5,26 +5,33 @@ export const createRating = async (req, res) => {
     try {
         const { teacherId, studentId } = req.params;
         const { bookId, ...ratingData } = req.body;
-
-        // Use findOneAndUpdate with upsert to either update or create a rating
-        const result = await DraftRating.findOneAndUpdate(
+        
+        // First, check if a rating already exists
+        const existingRating = await DraftRating.findOne({
+            teacher: teacherId,
+            student: studentId,
+            book: bookId
+        });
+        
+        // Use findOneAndUpdate without rawResult option
+        const rating = await DraftRating.findOneAndUpdate(
             { teacher: teacherId, student: studentId, book: bookId },
             { $set: ratingData },
-            { new: true, upsert: true, rawResult: true }
+            { new: true, upsert: true }
         );
-
-        // Check if the operation updated an existing rating or created a new one
-        if (result.lastErrorObject.updatedExisting) {
+        
+        // Check if a new rating was created or an existing one was updated
+        if (existingRating) {
             // Existing rating was updated
             res.status(200).json({
                 message: 'تم تحديث التقييم بنجاح', // "Rating has been updated successfully"
-                rating: result.value
+                rating: rating
             });
         } else {
             // New rating was created
             res.status(201).json({
                 message: 'تم تقييم الطلاب بنجاح', // "Students have been rated successfully"
-                rating: result.value
+                rating: rating
             });
         }
     } catch (error) {
