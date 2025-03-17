@@ -1,43 +1,34 @@
 import DraftRating from '../../models/DraftRating.model.js';
 import mongoose from 'mongoose';
 
+// In your draftRouter.js controller
 export const createRating = async (req, res) => {
     try {
         const { teacherId, studentId } = req.params;
         const { bookId, ...ratingData } = req.body;
 
-        // Check if rating already exists
-        const existingRating = await DraftRating.findOne({
-            teacher: teacherId,
-            student: studentId,
-            book: bookId
-        }).populate('book', 'title');
+        // Update existing or create new
+        const savedRating = await DraftRating.findOneAndUpdate(
+            { 
+                teacher: teacherId,
+                student: studentId,
+                book: bookId 
+            },
+            ratingData,
+            { 
+                new: true,
+                upsert: true,
+                setDefaultsOnInsert: true 
+            }
+        ).populate('book', 'title');
 
-        if (existingRating) {
-            return res.status(400).json({
-                message: `تم تقييم الطلاب مسبقاً على كتاب ${existingRating.book.title}`,
-                error: 'RATING_EXISTS'
-            });
-        }
-
-        // Create new rating
-        const newRating = new DraftRating({
-            teacher: teacherId,
-            student: studentId,
-            book: bookId,
-            ...ratingData
-        });
-
-        // Save rating
-        const savedRating = await newRating.save();
-
-        res.status(201).json({
-            message: 'تم تقييم الطلاب بنجاح',
+        res.status(200).json({
+            message: 'تم حفظ المسودة بنجاح',
             rating: savedRating
         });
     } catch (error) {
         res.status(500).json({ 
-            message: 'حدث خطأ اثناء تقييم الطلاب ,قد تكون المشكلة في الاتصال الانترنت او قاعدةالبيانات', 
+            message: 'حدث خطأ اثناء حفظ المسودة', 
             error: error.message 
         });
     }
