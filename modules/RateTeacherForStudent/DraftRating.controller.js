@@ -14,7 +14,7 @@ export const createRating = async (req, res) => {
         });
         
         // Use findOneAndUpdate without rawResult option
-        const rating = await DraftRating.findOneAndUpdate(
+        const rating = await DraftRating.replaceOne(
             { teacher: teacherId, student: studentId, book: bookId },
             { $set: ratingData },
             { new: true, upsert: true }
