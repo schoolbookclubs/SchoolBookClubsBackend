@@ -6,35 +6,27 @@ export const createRating = async (req, res) => {
         const { teacherId, studentId } = req.params;
         const { bookId, ...ratingData } = req.body;
 
-        // Check if rating already exists
-        const existingRating = await DraftRating.findOne({
-            teacher: teacherId,
-            student: studentId,
-            book: bookId
-        }).populate('book', 'title');
+        // Use findOneAndUpdate with upsert to either update or create a rating
+        const result = await DraftRating.findOneAndUpdate(
+            { teacher: teacherId, student: studentId, book: bookId },
+            { $set: ratingData },
+            { new: true, upsert: true, rawResult: true }
+        );
 
-        if (existingRating) {
-            return res.status(400).json({
-                message: `تم تقييم الطلاب مسبقاً على كتاب ${existingRating.book.title}`,
-                error: 'RATING_EXISTS'
+        // Check if the operation updated an existing rating or created a new one
+        if (result.lastErrorObject.updatedExisting) {
+            // Existing rating was updated
+            res.status(200).json({
+                message: 'تم تحديث التقييم بنجاح', // "Rating has been updated successfully"
+                rating: result.value
+            });
+        } else {
+            // New rating was created
+            res.status(201).json({
+                message: 'تم تقييم الطلاب بنجاح', // "Students have been rated successfully"
+                rating: result.value
             });
         }
-
-        // Create new rating
-        const newRating = new DraftRating({
-            teacher: teacherId,
-            student: studentId,
-            book: bookId,
-            ...ratingData
-        });
-
-        // Save rating
-        const savedRating = await newRating.save();
-
-        res.status(201).json({
-            message: 'تم تقييم الطلاب بنجاح',
-            rating: savedRating
-        });
     } catch (error) {
         res.status(500).json({ 
             message: 'حدث خطأ اثناء تقييم الطلاب ,قد تكون المشكلة في الاتصال الانترنت او قاعدةالبيانات', 
