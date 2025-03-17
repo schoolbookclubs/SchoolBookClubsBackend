@@ -13,7 +13,7 @@ import {
 const router = express.Router();
 
 // Route to create a rating for a specific teacher
-router.put('/:teacherId/:studentId', 
+router.post('/:teacherId/:studentId', 
     createRating
 );
 
@@ -44,3 +44,4 @@ router.get('/attendance/oneschool/:schoolCode', getStudentAttendanceBySchool);
 // Route to get all ratings for a specific book
 router.get('/book/:bookId', getRatingsByBookId);
 export default router;
+
