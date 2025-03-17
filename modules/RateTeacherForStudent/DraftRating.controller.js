@@ -6,42 +6,38 @@ export const createRating = async (req, res) => {
         const { teacherId, studentId } = req.params;
         const { bookId, ...ratingData } = req.body;
 
-        if (!bookId) {
+        // Check if rating already exists
+        const existingRating = await DraftRating.findOne({
+            teacher: teacherId,
+            student: studentId,
+            book: bookId
+        }).populate('book', 'title');
+
+        if (existingRating) {
             return res.status(400).json({
-                message: 'bookId',
-                error: 'MISSING_BOOK_ID'
+                message: `تم تقييم الطلاب مسبقاً على كتاب ${existingRating.book.title}`,
+                error: 'RATING_EXISTS'
             });
         }
 
-        const savedRating = await DraftRating.findOneAndUpdate(
-            { 
-                teacher: teacherId,
-                student: studentId,
-                book: bookId 
-            },
-            {
-                ...ratingData,
-                $setOnInsert: { 
-                    teacher: teacherId,
-                    student: studentId,
-                    book: bookId
-                }
-            },
-            { 
-                new: true,
-                upsert: true,
-                runValidators: true 
-            }
-        ).populate('book', 'title');
-
-        res.status(200).json({
-            message: `تم ${savedRating.createdAt ? 'إنشاء' : 'تحديث'} المسودة بنجاح`,
-            rating: savedRating
+        // Create new rating
+        const newRating = new DraftRating({
+            teacher: teacherId,
+            student: studentId,
+            book: bookId,
+            ...ratingData
         });
 
+        // Save rating
+        const savedRating = await newRating.save();
+
+        res.status(201).json({
+            message: 'تم تقييم الطلاب بنجاح',
+            rating: savedRating
+        });
     } catch (error) {
         res.status(500).json({ 
-            message: 'حدث خطأ أثناء حفظ المسودة',
+            message: 'حدث خطأ اثناء تقييم الطلاب ,قد تكون المشكلة في الاتصال الانترنت او قاعدةالبيانات', 
             error: error.message 
         });
     }
