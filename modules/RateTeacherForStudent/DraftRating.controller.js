@@ -7,7 +7,7 @@ export const createRating = async (req, res) => {
         const { bookId, ...ratingData } = req.body;
 
         // Check if rating already exists
-        const existingRating = await DraftRating.findOne({
+        const existingRating = await RateTeacherForStudent.findOne({
             teacher: teacherId,
             student: studentId,
             book: bookId
@@ -21,7 +21,7 @@ export const createRating = async (req, res) => {
         }
 
         // Create new rating
-        const newRating = new DraftRating({
+        const newRating = new RateTeacherForStudent({
             teacher: teacherId,
             student: studentId,
             book: bookId,
@@ -47,7 +47,7 @@ export const getRatingsByTeacher = async (req, res) => {
     try {
         const { teacherId } = req.params;
 
-        const ratings = await DraftRating.find({ teacher: teacherId })
+        const ratings = await RateTeacherForStudent.find({ teacher: teacherId })
             .populate('student', 'name');
 
         res.status(200).json({
@@ -66,7 +66,7 @@ export const getRatingsByStudent = async (req, res) => {
     try {
         const { studentId } = req.params;
 
-        const ratings = await DraftRating.find({ student: studentId })
+        const ratings = await RateTeacherForStudent.find({ student: studentId })
             .populate('teacher', 'name');
 
         res.status(200).json({
@@ -83,7 +83,7 @@ export const getRatingsByStudent = async (req, res) => {
 
 export const getRatingsTeacherById = async (req, res) => {
     try {
-        const ratings = await DraftRating.find({ teacher: req.params.teacherId })
+        const ratings = await RateTeacherForStudent.find({ teacher: req.params.teacherId })
             .populate('teacher', 'name')
             .populate('student', 'name')
         res.json(ratings);
@@ -97,7 +97,7 @@ export const getRatingsBySchoolCode = async (req, res) => {
         const { schoolCode } = req.params;
 
         // جلب جميع التقييمات مع البيانات المطلوبة في استعلام واحد
-        const ratings = await DraftRating.aggregate([
+        const ratings = await RateTeacherForStudent.aggregate([
             { $match: { schoolCode } },
             {
                 $lookup: {
@@ -250,7 +250,7 @@ export const getRatingsTeacherByhisId = async (req, res) => {
         const { teacherId } = req.params;
 
         // جلب جميع التقييمات مع البيانات المطلوبة في استعلام واحد
-        const ratings = await DraftRating.aggregate([
+        const ratings = await RateTeacherForStudent.aggregate([
             { $match: { teacher: new mongoose.Types.ObjectId(teacherId) } },
             {
                 $lookup: {
@@ -397,7 +397,7 @@ export const getStudentAttendanceBySchool = async (req, res) => {
     try {
         const { schoolCode } = req.params;
 
-        const attendanceData = await DraftRating.find({ schoolCode })
+        const attendanceData = await RateTeacherForStudent.find({ schoolCode })
             .populate('student', 'name studentId')
             .populate('book', 'title')
             .select('student book audience schoolCode');
@@ -426,7 +426,7 @@ export const getRatingsByBookId = async (req, res) => {
         const { bookId } = req.params;
 
         // Find all ratings for the specified book
-        const ratings = await DraftRating.find({ book: bookId })
+        const ratings = await RateTeacherForStudent.find({ book: bookId })
             .populate('teacher', 'name') // Populate teacher name
             .populate('student', 'name') // Populate student name
             .populate('book', 'title');  // Populate book title
