@@ -117,7 +117,14 @@ const DraftRatingSchema  = new mongoose.Schema({
     }
 });
 
+// Calculate average rating before saving
+DraftRatingSchema.pre('save', function (next) {
+    this.averageRating = this.calculateAverageRating();
+    next();
+});
+
 // حساب متوسط تقييم جميع المهارات للطالب الواحد
+// Calculate average rating for a single student
 DraftRatingSchema.methods.calculateAverageRating = function () {
     const ratingKeys = [
         'readingSkills.completeReading',
@@ -138,7 +145,8 @@ DraftRatingSchema.methods.calculateAverageRating = function () {
 
     const total = ratingKeys.reduce((sum, key) => {
         const keys = key.split('.');
-        return sum + (this[keys[0]][keys[1]] || 0);
+        const value = keys.length === 1 ? this[keys[0]] : this[keys[0]][keys[1]];
+        return sum + (Number(value) || 0); // Ensure value is a number, default to 0 if undefined
     }, 0);
 
     return total / ratingKeys.length;
@@ -181,10 +189,6 @@ DraftRatingSchema.statics.calculateBookAverageRating = async function(bookId) {
     return total / ratings.length;
 };
 
-// تحديث متوسط التقييم للطالب عند الحفظ
-DraftRatingSchema.post('save', function (doc) {
-    doc.averageRating = doc.calculateAverageRating();
-    doc.save();
-});
+
 
 export default mongoose.model('DraftRating', DraftRatingSchema );
