@@ -13,7 +13,7 @@ import {
 const router = express.Router();
 
 // Route to create a rating for a specific teacher
-router.post('/:teacherId/:studentId', 
+router.put('/:teacherId/:studentId', 
     createRating
 );
 
