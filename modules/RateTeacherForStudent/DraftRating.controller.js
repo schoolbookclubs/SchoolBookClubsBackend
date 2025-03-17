@@ -83,7 +83,7 @@ export const getRatingsByStudent = async (req, res) => {
 
 export const getRatingsTeacherById = async (req, res) => {
     try {
-        const ratings = await RateTeacherForStudent.find({ teacher: req.params.teacherId })
+        const ratings = await DraftRating.find({ teacher: req.params.teacherId })
             .populate('teacher', 'name')
             .populate('student', 'name')
         res.json(ratings);
