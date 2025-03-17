@@ -6,28 +6,42 @@ export const createRating = async (req, res) => {
         const { teacherId, studentId } = req.params;
         const { bookId, ...ratingData } = req.body;
 
-        // Update existing or create new
+        if (!bookId) {
+            return res.status(400).json({
+                message: 'bookId',
+                error: 'MISSING_BOOK_ID'
+            });
+        }
+
         const savedRating = await DraftRating.findOneAndUpdate(
             { 
                 teacher: teacherId,
                 student: studentId,
                 book: bookId 
             },
-            ratingData,
+            {
+                ...ratingData,
+                $setOnInsert: { 
+                    teacher: teacherId,
+                    student: studentId,
+                    book: bookId
+                }
+            },
             { 
                 new: true,
                 upsert: true,
-                setDefaultsOnInsert: true 
+                runValidators: true 
             }
         ).populate('book', 'title');
 
         res.status(200).json({
-            message: 'تم حفظ المسودة بنجاح',
+            message: `تم ${savedRating.createdAt ? 'إنشاء' : 'تحديث'} المسودة بنجاح`,
             rating: savedRating
         });
+
     } catch (error) {
         res.status(500).json({ 
-            message: 'حدث خطأ اثناء حفظ المسودة', 
+            message: 'حدث خطأ أثناء حفظ المسودة',
             error: error.message 
         });
     }
