@@ -1,7 +1,7 @@
 import DraftRating from '../../models/DraftRating.model.js';
 import mongoose from 'mongoose';
 
-createRating = async (req, res) => {
+export const createRating = async (req, res) => {
     try {
         const { teacherId, studentId } = req.params;
         const { bookId, ...ratingData } = req.body;
