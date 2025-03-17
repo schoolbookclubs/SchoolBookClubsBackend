@@ -1,7 +1,6 @@
 import DraftRating from '../../models/DraftRating.model.js';
 import mongoose from 'mongoose';
 
-// In your draftRouter.js controller
 export const createRating = async (req, res) => {
     try {
         const { teacherId, studentId } = req.params;
