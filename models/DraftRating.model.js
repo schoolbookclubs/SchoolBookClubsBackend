@@ -4,17 +4,14 @@ const DraftRatingSchema  = new mongoose.Schema({
     teacher: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Teacher',
-        required: true
     },
     student: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Student',
-        required: true
     },
     book: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Book',
-        required: true
     },
     audience: {
         type: String,
@@ -22,7 +19,6 @@ const DraftRatingSchema  = new mongoose.Schema({
     },
     schoolCode: {
         type: String,
-        required: true
     },
     readingSkills: {
         completeReading: {
