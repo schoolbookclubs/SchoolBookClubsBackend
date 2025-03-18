@@ -2,52 +2,63 @@ import RateingStudentBookDraft from "../../../models/RateingStudentBookDraft.js"
 
 class RateingStudentBookDraftController {
   // Create a new book rating
-  static async createBookRating(req, res) {
-    try {
-      const { studentId, bookId } = req.params;
-      
-      // Check if student has already rated this book
-      const existingRating = await RateingStudentBookDraft.findOne({ studentId, bookId });
-      if (existingRating) {
-        return res.status(400).json({ 
-          success: false, 
-          message: "لقد قمت بتقييم هذا الكتاب مسبقاً" 
-        });
-      }
+ static async createBookRating(req, res) {
+  try {
+    const { studentId, bookId } = req.params;
+    
+    // Check for existing draft
+    const existingRating = await RateingStudentBookDraft.findOne({ 
+      studentId, 
+      bookId 
+    });
 
-      const ratingData = {
-        studentId,
-        bookId,
-        schoolCode: req.body.schoolCode,
-        recommendBook: req.body.recommendBook,
-        authorStyle: req.body.authorStyle,
-        keyIdeas: req.body.keyIdeas,
-        likedIdeas: req.body.likedIdeas,
-        dislikedIdeas: req.body.dislikedIdeas,
-        memorableQuotes: req.body.memorableQuotes,
-        potentialAdditions: req.body.potentialAdditions,
-        personalImpact: req.body.personalImpact,
-        bookRating: req.body.bookRating,
-        readingStartDate: req.body.readingStartDate,
-        readingEndDate: req.body.readingEndDate
-      };
+    // Prepare update data
+    const ratingData = {
+      studentId,
+      bookId,
+      schoolCode: req.body.schoolCode,
+      recommendBook: req.body.recommendBook,
+      authorStyle: req.body.authorStyle,
+      keyIdeas: req.body.keyIdeas,
+      likedIdeas: req.body.likedIdeas,
+      dislikedIdeas: req.body.dislikedIdeas,
+      memorableQuotes: req.body.memorableQuotes,
+      potentialAdditions: req.body.potentialAdditions,
+      personalImpact: req.body.personalImpact,
+      bookRating: req.body.bookRating,
+      readingStartDate: req.body.readingStartDate,
+      readingEndDate: req.body.readingEndDate
+    };
 
-      const newRating = new RateingStudentBookDraft(ratingData);
-      await newRating.save();
+    // Update or create with atomic operation
+    const updatedRating = await RateingStudentBookDraft.findOneAndUpdate(
+      { studentId, bookId },
+      { $set: ratingData },
+      { new: true, upsert: true }
+    );
 
+    // Determine response based on whether it existed before
+    if (existingRating) {
+      res.status(200).json({
+        success: true,
+        message: "تم تحديث مسودة التقييم بنجاح",
+        data: updatedRating
+      });
+    } else {
       res.status(201).json({
         success: true,
-        message: "تم إضافة تقييم الكتاب بنجاح",
-        data: newRating
-      });
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: "حدث خطأ أثناء إضافة تقييم الكتاب",
-        error: error.message
+        message: "تم حفظ المسودة بنجاح",
+        data: updatedRating
       });
     }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "حدث خطأ أثناء حفظ المسودة",
+      error: error.message
+    });
   }
+}
 
   // Get ratings for a specific book
   static async getBookRatings(req, res) {
