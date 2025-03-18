@@ -10,6 +10,7 @@ import parentRouter from "./modules/Parent/parent.routes.js";
 import bookRouter from "./modules/Book/book.router.js";
 import RateTeacher from "./modules/RateTeacherForStudent/RateTeacherForStudent.router.js";
 import RateingStudentBookRouter from "./modules/RatingStudentBooks/routes/RateingStudentBookRoutes.js";
+import RateingStudentBookDraftRouter from "./modules/RatingStudentBooks/routes/RateingStudentBookDraftRoutes.js";
 import StudentSelfAssessmentRouter from "./modules/StudentSelfAssessment/routes/StudentSelfAssessmentRoutes.js";
 import ParentAssessmentRouter from "./modules/ParentAssessment/routes/ParentAssessmentRoutes.js";
 import ReadingClubEvaluationRouter from "./modules/ReadingClubEvaluation/ReadingClubEvaluation.router.js";
@@ -31,6 +32,7 @@ export const appMethods = (app, express) => {
     app.use("/api/RateTeacher",RateTeacher)
     app.use('/api/drafts', draftRouter)
     app.use("/api/RateingStudentBook",RateingStudentBookRouter)
+    app.use("/api/RateingStudentBookDraft",RateingStudentBookDraftRouter)
     app.use("/api/StudentSelfAssessment",StudentSelfAssessmentRouter)
     app.use("/api/ParentAssessment",ParentAssessmentRouter)
     app.use("/api/ReadingClubEvaluation",ReadingClubEvaluationRouter)
