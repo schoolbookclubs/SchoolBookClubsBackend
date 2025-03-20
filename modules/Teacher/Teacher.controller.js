@@ -357,20 +357,16 @@ export const forgetPasswordTeacher = async (req, res) => {
 
         // Find teacher by email
         const teacher = await Teachermodel.findOne({ 
-    email: { $regex: new RegExp(`^${email}$`, 'i') } 
-});
+            email: { $regex: new RegExp(`^${email}$`, 'i') } 
+        });
+        
         if (!teacher) {
             return res.status(404).json({ message: 'البريد الالكتروني غير مسجل' });
         }
 
-        // Hash new password
-        const hashedPassword = await bcrypt.hash(newPassword, parseInt(process.env.saltround));
-        
-        // Update password
-        teacher.password = hashedPassword;
+        // Simply set the password and let the pre-save hook handle the hashing
+        teacher.password = newPassword;
         await teacher.save();
-
-      
 
         res.json({ message: 'تم تغيير كلمة المرور بنجاح' });
     } catch (error) {
