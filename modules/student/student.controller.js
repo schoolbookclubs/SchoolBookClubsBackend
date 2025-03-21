@@ -7,6 +7,34 @@ import dotenv from 'dotenv';
 import StudentModel from '../../models/Student.model.js';
 dotenv.config();
 
+export const changePassword = async (req, res) => {
+    try {
+        const { currentPassword, newPassword, confirmPassword } = req.body;
+        const studentId = req.user.id; // Get from auth middleware
+
+        if (newPassword !== confirmPassword) {
+            return res.status(400).json({ message: 'كلمات المرور الجديدة غير متطابقة' });
+        }
+
+        const student = await StudentModel.findById(studentId);
+        if (!student) {
+            return res.status(404).json({ message: 'الطالب غير موجود' });
+        }
+
+        const isMatch = await bcrypt.compare(currentPassword, student.password);
+        if (!isMatch) {
+            return res.status(400).json({ message: 'كلمة المرور الحالية غير صحيحة' });
+        }
+
+        student.password = newPassword;
+        await student.save();
+
+        res.json({ success: true, message: 'تم تغيير كلمة المرور بنجاح' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 // Create transporter for sending emails
 const transporter = nodemailer.createTransport({
     host: 'mail.alephyaa.net',
