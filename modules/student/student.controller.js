@@ -9,29 +9,42 @@ dotenv.config();
 
 export const changePassword = async (req, res) => {
     try {
-        const { currentPassword, newPassword, confirmPassword } = req.body;
-        const studentId = req.user.id; // Get from auth middleware
+        const { email, currentPassword, newPassword, confirmPassword } = req.body;
+
+        // Validate required fields
+        if (!email || !currentPassword || !newPassword || !confirmPassword) {
+            return res.status(400).json({ message: 'جميع الحقول مطلوبة' });
+        }
 
         if (newPassword !== confirmPassword) {
             return res.status(400).json({ message: 'كلمات المرور الجديدة غير متطابقة' });
         }
 
-        const student = await StudentModel.findById(studentId);
+        // Find student by email (case-insensitive search)
+        const student = await StudentModel.findOne({ 
+            email: { $regex: new RegExp(`^${email}$`, 'i') }
+        });
+
         if (!student) {
             return res.status(404).json({ message: 'الطالب غير موجود' });
         }
 
+        // Verify current password
         const isMatch = await bcrypt.compare(currentPassword, student.password);
         if (!isMatch) {
             return res.status(400).json({ message: 'كلمة المرور الحالية غير صحيحة' });
         }
 
+        // Update password (hashing will be handled by the pre-save hook)
         student.password = newPassword;
         await student.save();
 
         res.json({ success: true, message: 'تم تغيير كلمة المرور بنجاح' });
+
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ 
+            message: error.message || 'حدث خطأ أثناء تغيير كلمة المرور' 
+        });
     }
 };
 
