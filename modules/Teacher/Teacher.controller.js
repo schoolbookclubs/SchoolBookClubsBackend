@@ -465,7 +465,7 @@ export const generateVerificationCode = async (req, res) => {
         await teacher.save();
 
         // Create transporter
-        const transporter = nodemailer.createTransporter({
+        const transporter = nodemailer.createTransport({
             host: 'mail.alephyaa.net',
             port: 465,
             secure: true,
