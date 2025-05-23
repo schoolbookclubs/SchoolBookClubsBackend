@@ -441,7 +441,7 @@ export const getTeacher = async (req, res) => {
 
 export const generateVerificationCode = async (req, res) => {
     try {
-        const { email } = req.body;
+        const { email, force = false } = req.body;
         
         // Find the teacher
         const teacher = await Teachermodel.findOne({ email });
@@ -450,22 +450,22 @@ export const generateVerificationCode = async (req, res) => {
             return res.status(404).json({ message: "المعلم غير موجود" });
         }
 
-        // Check if verification code already exists
-        if (teacher.verifiedCode) {
+        // Check if verification code already exists and force is not set
+        if (teacher.verifiedCode && !force) {
             return res.status(400).json({ 
-                message: "لديك بالفعل رمز تحقق صالح. يرجى استخدام الرمز المرسل مسبقاً " 
+                message: "لديك بالفعل رمز تحقق صالح. يرجى استخدام الرمز المرسل مسبقاً أو طلب رمز جديد" 
             });
         }
 
         // Generate a random 6-digit code
         const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
         
-        // Save the code to database
+        // Save the code to database (this will overwrite existing code if force is true)
         teacher.verifiedCode = verificationCode;
         await teacher.save();
 
         // Create transporter
-        const transporter = nodemailer.createTransport({
+        const transporter = nodemailer.createTransporter({
             host: 'mail.alephyaa.net',
             port: 465,
             secure: true,
@@ -529,6 +529,14 @@ export const generateVerificationCode = async (req, res) => {
                     font-size: 25px;
                     font-weight: bold;
                 }
+                .warning {
+                    background-color: #fff3cd;
+                    border: 1px solid #ffeaa7;
+                    color: #856404;
+                    padding: 15px;
+                    border-radius: 5px;
+                    margin: 15px 0;
+                }
             </style>
         </head>
         <body>
@@ -538,14 +546,16 @@ export const generateVerificationCode = async (req, res) => {
                 </div>
                 <div class="content">
                     <div class="icon">📚</div>
-                    <h2 >مرحباً ${teacher.name}</h2>
+                    <h2>مرحباً ${teacher.name}</h2>
                     <p>لقد تلقينا طلباً لإعادة تعيين كلمة المرور الخاصة بك. الرجاء استخدام الرمز التالي:</p>
                     <div class="code">${verificationCode}</div>
-                    <p> الرجاء عدم مشاركة هذا الرمز مع أي شخص</p>
+                    ${force ? '<div class="warning">⚠️ تم إنشاء رمز جديد وإلغاء الرمز السابق</div>' : ''}
+                    <p>الرجاء عدم مشاركة هذا الرمز مع أي شخص</p>
+                    <p><strong>هذا الرمز صالح لمرة واحدة فقط</strong></p>
                     <div class="footer">
                         <p>مع تحيات فريق أندية القراءة المدرسية</p>
-                            <p>© 2024 جميع الحقوق محفوظة </p>
-                            <p style="text-decoration: none;">www.alephyaa.net</p>
+                        <p>© 2024 جميع الحقوق محفوظة</p>
+                        <p style="text-decoration: none;">www.alephyaa.net</p>
                     </div>
                 </div>
             </div>
@@ -557,13 +567,20 @@ export const generateVerificationCode = async (req, res) => {
         await transporter.sendMail({
             from: process.env.EMAIL,
             to: email,
-            subject: "رمز التحقق - أندية القراءة المدرسية",
+            subject: force ? "رمز التحقق الجديد - أندية القراءة المدرسية" : "رمز التحقق - أندية القراءة المدرسية",
             html: htmlEmail
         });
 
-        res.status(200).json({ message: "تم إرسال رمز التحقق بنجاح" });
+        const successMessage = force 
+            ? "تم إنشاء رمز تحقق جديد وإرساله بنجاح" 
+            : "تم إرسال رمز التحقق بنجاح";
+
+        res.status(200).json({ message: successMessage });
     } catch (error) {
-        res.status(500).json({ message: "حدث خطأ أثناء إرسال رمز التحقق", error: error.message });
+        res.status(500).json({ 
+            message: "حدث خطأ أثناء إرسال رمز التحقق", 
+            error: error.message 
+        });
     }
 };
 
@@ -577,13 +594,13 @@ export const verifyCodeAndResetPassword = async (req, res) => {
         }
 
         // Find teacher and verify code
-         const teacher = await Teachermodel.findOne({ 
-    email: { $regex: new RegExp(`^${email}$`, 'i') },
-             verifiedCode: verificationCode  
-});
+        const teacher = await Teachermodel.findOne({ 
+            email: { $regex: new RegExp(`^${email}$`, 'i') },
+            verifiedCode: verificationCode  
+        });
 
         if (!teacher) {
-            return res.status(400).json({ message: "رمز التحقق غير صحيح" });
+            return res.status(400).json({ message: "رمز التحقق غير صحيح أو منتهي الصلاحية" });
         }
 
         // Update password and remove verification code
@@ -593,6 +610,9 @@ export const verifyCodeAndResetPassword = async (req, res) => {
 
         res.status(200).json({ message: "تم تغيير كلمة المرور بنجاح" });
     } catch (error) {
-        res.status(500).json({ message: "حدث خطأ أثناء تغيير كلمة المرور", error: error.message });
+        res.status(500).json({ 
+            message: "حدث خطأ أثناء تغيير كلمة المرور", 
+            error: error.message 
+        });
     }
 };
